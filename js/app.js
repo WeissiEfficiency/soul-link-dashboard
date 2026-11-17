@@ -3,7 +3,7 @@
 "use strict";
 /* Versionsschutz: passt index.html nicht zu dieser Datei (Browser-Cache nach einem Deploy), einmal neu laden.
    APP_V setzt tools/bump.py zusammen mit data-v und ?v= in index.html. */
-var APP_V="202611171132";
+var APP_V="202611171350";
 var HTML_V=document.documentElement.getAttribute("data-v");
 if(HTML_V&&HTML_V!==APP_V){try{var rk="soullink-reload-"+HTML_V+"-"+APP_V;if(!sessionStorage.getItem(rk)){sessionStorage.setItem(rk,"1");location.reload();return}}catch(e){}}
 /* Spieler: Anzahl aus config.js (playerCount, 2 bis 6, Standard 3). Schlüssel p0 … p5, Namen stehen in meta.players. */
@@ -12,20 +12,12 @@ var NP=Math.max(2,Math.min(6,parseInt(CFG0.playerCount,10)||3));
 var P=[],IDX=[],DEF=[],MARK=["●","■","▲","◆","★","✚"].slice(0,NP);
 for(var pi=0;pi<NP;pi++){P.push("p"+pi);IDX.push(pi);DEF.push("Spieler "+(pi+1))}
 var NUMW=["","","zweit","dritt","viert","fünft","sechst"][NP], NUMC=["","","Zwei","Drei","Vier","Fünf","Sechs"][NP];
-var CAPS=[
- {id:"g1",name:"Benny / Maik / Colin",place:"Orion City",lv:14,gym:true},
- {id:"g2",name:"Aloe",place:"Septerna City",lv:20,gym:true},
- {id:"g3",name:"Artie",place:"Stratos City",lv:23,gym:true},
- {id:"g4",name:"Kamilla",place:"Rayono City",lv:27,gym:true},
- {id:"g5",name:"Turner",place:"Marea City",lv:31,gym:true},
- {id:"g6",name:"Géraldine",place:"Panaero City",lv:35,gym:true},
- {id:"g7",name:"Sandro",place:"Nevaio City",lv:39,gym:true},
- {id:"g8",name:"Lysander / Lilia",place:"Twindrake City",lv:43,gym:true},
- {id:"e4",name:"Top Vier",place:"Pokémon-Liga",lv:50},
- {id:"n",name:"N",place:"Schloss von N",lv:52},
- {id:"gc",name:"G-Cis",place:"Schloss von N",lv:54}];
-var DEFAULT_ROUTES=[["r01",1,"Starter (Avenitia)"],["r02",2,"Route 1"],["r03",3,"Route 2"],["r04",4,"Orion City (Geschenk)"],["r05",5,"Traumbrache"],["r06",6,"Route 3"],["r07",7,"Grundwassersenke"],["r08",8,"Ewigenwald"],["r09",9,"Stratos City"],["r10",10,"Route 4"],["r11",11,"Wüstenresort"],["r42",11.2,"Alter Palast"],["r43",11.4,"Fossil (Extra-Encounter)",true],["r13",13,"Route 16"],["r14",14,"Hain der Täuschung"],["r15",15,"Route 5"],["r16",16,"Marea City"],["r17",17,"Route 6"],["r18",18,"Elektrolithhöhle"],["r19",19,"Panaero-Höhle"],["r20",20,"Route 7"],["r21",21,"Turm des Himmels"],["r22",22,"Wendelberg"],["r23",23,"Route 8"],["r24",24,"Moor von Nevaio"],["r25",25,"Drachenstiege"],["r26",26,"Route 9"],["r27",27,"Route 10"],["r28",28,"Siegesstraße"],["r29",29,"Route 11"],["r30",30,"Route 12"],["r31",31,"Dorfbrücke"],["r32",32,"Route 13"],["r33",33,"Ondula"],["r34",34,"Bucht von Ondula"],["r35",35,"Route 14"],["r36",36,"Schrein der Ernte"],["r37",37,"Route 15"],["r38",38,"Route 17"],["r39",39,"Route 18"],["r40",40,"Riesengrotte"],["r41",41,"Höhle der Prüfung"]];
-var FOSSIL_HINT="Zählt nur, wenn alle ein Fossil finden. Schild- oder Federfossil, wiederbelebt im Museum von Septerna City.";
+/* Spiele: Daten in js/games.js (Routen, Level-Caps, Region, Dex-Bereich). Das aktuelle Spiel steht in meta.game
+   (fehlt = Schwarz/Weiß). Der Admin wählt; gilt sofort, solange nichts eingetragen ist, sonst ab „Neuer Run starten“ (meta.nextGame). */
+var GAMES=window.SOULLINK_GAMES;
+function gameId(g){g=g===undefined?S.meta.game:g;return g&&GAMES.byId[g]?g:GAMES.def}
+function GAME(g){return GAMES.byId[gameId(g)]}
+function caps(){return GAME().caps}
 function perPlayer(f){var o={};P.forEach(function(p,i){o[p]=f(i)});return o}
 var EMPTY_CELLS=function(){return perPlayer(function(){return {sp:"",nick:"",st:""}})};
 var NO_DEATHS=function(){return perPlayer(function(){return false})};
@@ -58,11 +50,11 @@ var STL={alive:"Lebendig ♡",dead:"Tot (×_×)",miss:"Verpasst",part:"Teilweise
    Farben und Formen stehen in css/style.css unter :root[data-theme=…]; hier nur die Sprüche. */
 var THEMES=["pokedex","pastell","lovecraft"], DEFAULT_THEME="pokedex";
 var THEME_TXT={
-  pokedex:{tag:"Einall · Soul Link · "+NP+" Trainer",run:"Run läuft. Viel Erfolg, Trainer!",won:"Glückwunsch! Ihr habt die Liga bezwungen!",lost:"… alle Pokémon kampfunfähig.",grave:"Noch kein Link gestorben."},
-  pastell:{tag:"Einall-Run zu "+NUMW+" (◕‿◕)♡",run:"Run läuft (๑•̀ㅂ•́)و✧",won:"Run gewonnen ✧*。٩(ˊᗜˋ*)و✧*。",lost:"(×_×)",grave:"Noch kein Link gestorben. (◕‿◕)"},
-  lovecraft:{tag:NUMC+" Seelen, ein Bund – und etwas, das unter Einall schläft",run:"Der Run währt fort. Etwas beobachtet euch aus der Tiefe.",won:"Bezwungen … vorerst. Die Sterne stehen noch nicht richtig.",lost:"– verschlungen von namenlosem Grauen.",grave:"Noch ruht kein Link in der Tiefe."}};
+  pokedex:{tag:"{R} · Soul Link · "+NP+" Trainer",run:"Run läuft. Viel Erfolg, Trainer!",won:"Glückwunsch! Ihr habt die Liga bezwungen!",lost:"… alle Pokémon kampfunfähig.",grave:"Noch kein Link gestorben."},
+  pastell:{tag:"{R}-Run zu "+NUMW+" (◕‿◕)♡",run:"Run läuft (๑•̀ㅂ•́)و✧",won:"Run gewonnen ✧*。٩(ˊᗜˋ*)و✧*。",lost:"(×_×)",grave:"Noch kein Link gestorben. (◕‿◕)"},
+  lovecraft:{tag:NUMC+" Seelen, ein Bund – und etwas, das unter {R} schläft",run:"Der Run währt fort. Etwas beobachtet euch aus der Tiefe.",won:"Bezwungen … vorerst. Die Sterne stehen noch nicht richtig.",lost:"– verschlungen von namenlosem Grauen.",grave:"Noch ruht kein Link in der Tiefe."}};
 function themeName(){var t=document.documentElement.getAttribute("data-theme");return THEMES.indexOf(t)>-1?t:DEFAULT_THEME}
-function tt(k){return THEME_TXT[themeName()][k]}
+function tt(k){return THEME_TXT[themeName()][k].replace("{R}",GAME().region)}
 var STC={alive:"Lebendig",dead:"Tot",miss:"Verpasst",part:"Teilweise",open:"Offen"};
 function sorted(){return Array.from(S.routes.entries()).sort(function(a,b){return (a[1].order||0)-(b[1].order||0)})}
 function killerName(r){return typeof r.killer==="number"&&r.killer>-1?pname(r.killer):""}
@@ -90,11 +82,12 @@ var NORM=POKE.map(norm), SIMP=NORM.map(simp);
 function osa(a,b){var m=a.length,n=b.length;if(!m)return n;if(!n)return m;var d=[];for(var i=0;i<=m;i++){d[i]=[i]}for(var j=1;j<=n;j++)d[0][j]=j;
   for(i=1;i<=m;i++)for(j=1;j<=n;j++){var c=a[i-1]===b[j-1]?0:1;d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+c);
     if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1)}return d[m][n]}
+function inGame(i){var g=GAME(),d=i+1;return d<=g.maxDex||(g.extraDex||[]).indexOf(d)>-1}
 function search(q){
-  var n=norm(q);if(!n)return [];var out=[];
-  if(/^\d+$/.test(n)){var k=String(+n);POKE.forEach(function(_,i){var dex=String(i+1);if(dex===k)out.push([i,1000]);else if(dex.indexOf(k)===0)out.push([i,800-dex.length])})}
+  var n=norm(q);if(!n)return [];var out=[],gb=GAME().boost||[0,0];
+  if(/^\d+$/.test(n)){var k=String(+n);POKE.forEach(function(_,i){if(!inGame(i))return;var dex=String(i+1);if(dex===k)out.push([i,1000]);else if(dex.indexOf(k)===0)out.push([i,800-dex.length])})}
   else{var sq=simp(n),lim=n.length<=3?0:(n.length<=5?1:(n.length<=8?2:3));
-    for(var i=0;i<POKE.length;i++){var t=NORM[i],s=0,at;
+    for(var i=0;i<POKE.length;i++){if(!inGame(i))continue;var t=NORM[i],s=0,at;
       if(t===n)s=1000;
       else if(t.indexOf(n)===0)s=900-(t.length-n.length);
       else if((at=t.indexOf(n))>-1)s=720-at;
@@ -103,7 +96,7 @@ function search(q){
         else if(sq.length>2&&st.indexOf(sq)>-1)s=620;
         else if(lim){var d=Math.min(osa(n,t.slice(0,n.length)),osa(n,t.slice(0,n.length+1)),osa(n,t.slice(0,Math.max(1,n.length-1))),osa(n,t));
           if(d<=lim)s=540-d*70}}
-      if(s){if(i>=493)s+=25;out.push([i,s])}}}
+      if(s){if(i+1>=gb[0]&&i+1<=gb[1])s+=25;out.push([i,s])}}}
   out.sort(function(a,b){return b[1]-a[1]||a[0]-b[0]});return out.slice(0,8).map(function(x){return x[0]});
 }
 var pk=el("ul",{id:"pk",role:"listbox","aria-label":"Pokémon-Vorschläge",hidden:""});document.body.appendChild(pk);
@@ -351,10 +344,11 @@ function setTotal(i,key,v){if(!(v>=0))return;var part={tally:{}};part.tally[P[i]
 function setRunNo(n){if(!(n>=1))return;patchMeta({run:{no:n}});renderRun()}
 function capLv(c){var o=((S.meta.caps||{}).lv||{})[c.id];return typeof o==="number"&&o>0?o:c.lv}
 function beaten(c){return !!(((S.meta.caps||{}).beaten||{})[c.id])}
-function nextCap(){for(var i=0;i<CAPS.length;i++)if(!beaten(CAPS[i]))return CAPS[i];return null}
-function badgeCount(){return CAPS.filter(function(c){return c.gym&&beaten(c)}).length}
+function nextCap(){var C=caps();for(var i=0;i<C.length;i++)if(!beaten(C[i]))return C[i];return null}
+function badgeCount(){return caps().filter(function(c){return c.gym&&beaten(c)}).length}
 function renderCaps(){
-  var box=$("caps"),nx=nextCap();
+  var box=$("caps"),nx=nextCap(),CAPS=caps();
+  if(box.getAttribute("data-g")!==gameId()){box.textContent="";box.setAttribute("data-g",gameId())}
   if(!box.children.length){CAPS.forEach(function(c){
     box.appendChild(el("div",{class:"card cap","data-id":c.id},[
       el("button",{type:"button",class:"tick","data-id":c.id,"aria-pressed":"false","aria-label":c.name+" besiegt"}),
@@ -419,9 +413,9 @@ function renderAna(){
   H.slice().reverse().forEach(function(h){var res={lost:"Verloren",won:"Gewonnen",run:"Abgebrochen"}[h.status]||"–";
     var en=IDX.filter(function(i){return (h.enders||{})[P[i]]}).map(pname).join(", ");
     var dt=h.endedAt?new Date(h.endedAt).toLocaleDateString("de-DE"):"";
-    hb.appendChild(el("tr",null,[el("td",{class:"k",text:"Run "+h.no}),el("td",null,[el("span",{class:"chip "+(h.status||"run"),text:res})]),el("td",{text:en}),el("td",{text:h.where||""}),el("td",{text:String(h.badges||0)}),el("td",{text:String(h.links||0)}),el("td",{text:String((h.deadLinks||[]).length)}),el("td",{text:dt})]))});
+    hb.appendChild(el("tr",null,[el("td",{class:"k"},[document.createTextNode("Run "+h.no),el("small",{class:"hg",text:GAME(h.game||GAMES.def).title})]),el("td",null,[el("span",{class:"chip "+(h.status||"run"),text:res})]),el("td",{text:en}),el("td",{text:h.where||""}),el("td",{text:String(h.badges||0)}),el("td",{text:String(h.links||0)}),el("td",{text:String((h.deadLinks||[]).length)}),el("td",{text:dt})]))});
 }
-function renderAll(){renderRun();renderCaps();renderTally();renderStats();renderList();if(ui.view==="all")renderAllView();renderAna();renderBk()}
+function renderAll(){renderGame();renderRun();renderCaps();renderTally();renderStats();renderList();if(ui.view==="all")renderAllView();renderAna();renderBk()}
 
 /* ---------- Backup-Erinnerung ---------- */
 var BK_DAYS=7, autoBk=null;   // autoBk: letztes automatisches Backup (GitHub Action, config.js autoBackupUrl)
@@ -459,12 +453,16 @@ function startNewRun(){
   var per={},tally={};for(var i=0;i<NP;i++){var lv=live(i);per[P[i]]=lv;tally[P[i]]={run:baseOf(i,"run")+lv.run,death:baseOf(i,"death")+lv.death,enc:baseOf(i,"enc")+lv.enc}}
   var nc=nextCap();
   var hist={no:+r.no||0,status:runState(),enders:clone(r.enders||{}),where:r.where||"",cause:r.cause||"",endedAt:new Date().toISOString(),badges:badgeCount(),lastCap:nc?nc.name:"alle",links:c.alive+c.dead,deadLinks:dead,perPlayer:per};
+  if(S.meta.game)hist.game=S.meta.game;   // ohne gesetztes Spiel: Schwarz/Weiß (und alte Firestore-Regeln bleiben gültig)
   var hid="run"+hist.no+"-"+Date.now().toString(36);
   S.history.push({id:hid,data:hist});
   store.set("history/"+hid,hist).catch(function(){setSync("warn","Run-Verlauf nicht gespeichert")});
+  var next={tally:tally,run:{no:(+r.no||0)+1,status:"run",enders:NO_DEATHS(),where:"",cause:""}};
+  var ng=S.meta.nextGame;
+  if(ng&&GAMES.byId[ng]&&ng!==gameId()){patchMeta(next);switchGame(ng);return}
   var n=0;S.routes.forEach(function(x,id){patchRoute(id,{nick:"",cells:EMPTY_CELLS(),killer:-1,cause:"",deaths:NO_DEATHS()},450+n*90);n++});
-  var beat={};CAPS.forEach(function(cp){beat[cp.id]=false});
-  patchMeta({tally:tally,caps:{beaten:beat},run:{no:(+r.no||0)+1,status:"run",enders:NO_DEATHS(),where:"",cause:""}});
+  var beat={};caps().forEach(function(cp){beat[cp.id]=false});next.caps={beaten:beat};
+  patchMeta(next);
   ui.showAll=false;renderAll();
 }
 
@@ -533,10 +531,44 @@ $("addBtn").addEventListener("click",function(){
 });
 async function seedRoutes(){
   if(!canWrite||!store)return;$("seedBtn").disabled=true;
-  for(var i=0;i<DEFAULT_ROUTES.length;i++){var d=DEFAULT_ROUTES[i],r={order:d[1],name:d[2],nick:"",custom:false,killer:-1,cause:"",deaths:NO_DEATHS(),cells:EMPTY_CELLS()};
-    if(d[3]){r.extra=true;r.hint=FOSSIL_HINT}
-    S.routes.set(d[0],r);try{await store.set("routes/"+d[0],r)}catch(e){setSync("warn","Speichern fehlgeschlagen")}await sleep(40)}
+  var R=GAME().routes;
+  for(var i=0;i<R.length;i++){var d=R[i],r=newRoute(d);
+    S.routes.set(d.id,r);try{await store.set("routes/"+d.id,r)}catch(e){setSync("warn","Speichern fehlgeschlagen")}await sleep(40)}
   $("seedBtn").disabled=false;renderAll();
+}
+function newRoute(d){var r={order:d.order,name:d.name,nick:"",custom:false,killer:-1,cause:"",deaths:NO_DEATHS(),cells:EMPTY_CELLS()};
+  if(d.extra){r.extra=true;r.hint=d.hint||""}return r}
+/* Spiel wechseln: Routen des neuen Spiels anlegen (gleiche IDs werden überschrieben), übrige Routen löschen,
+   Level-Caps zurücksetzen (auch eigene Level, die IDs g1 … g8 usw. gelten in jedem Spiel). */
+function runEmpty(){var any=false;S.routes.forEach(function(r){if(nickOf(r))any=true;for(var i=0;i<NP;i++){var c=cellOf(r,i);if(c.st||c.sp)any=true}});return !any&&S.meta.run.status!=="lost"}
+async function switchGame(g){
+  if(!canWrite||!store||!GAMES.byId[g])return;
+  var c=S.meta.caps||{},beat={},lv={};
+  Object.keys(c.beaten||{}).concat(GAME(g).caps.map(function(x){return x.id})).forEach(function(k){beat[k]=false});
+  Object.keys(c.lv||{}).forEach(function(k){lv[k]=0});
+  patchMeta({game:g,nextGame:"",caps:{beaten:beat,lv:lv}});
+  var R=GAME(g).routes,keep={},old=Array.from(S.routes.keys());R.forEach(function(d){keep[d.id]=1});
+  old.forEach(function(id){clearTimeout(timers.get(id));pend.delete(id);S.routes.delete(id)});
+  var objs=R.map(function(d){var r=newRoute(d);S.routes.set(d.id,r);return r});   // eigene Kopie: ein Snapshot zwischendurch kann S.routes kurz ändern
+  ui.showAll=false;renderAll();
+  for(var i=0;i<R.length;i++){try{await store.set("routes/"+R[i].id,objs[i])}catch(e){setSync("warn","Speichern fehlgeschlagen")}await sleep(40)}
+  for(var j=0;j<old.length;j++)if(!keep[old[j]]){try{await store.del("routes/"+old[j])}catch(e){setSync("warn","Löschen fehlgeschlagen")}await sleep(40)}
+}
+function pickGame(g){
+  if(!canWrite||!backupAllowed()||!GAMES.byId[g])return;
+  if(g===gameId()){patchMeta({nextGame:""});renderGame();return}
+  if(runEmpty()){switchGame(g);return}
+  patchMeta({nextGame:g});renderGame();
+}
+var gameSel=$("gameSel");
+GAMES.list.forEach(function(g){gameSel.appendChild(el("option",{value:g.id,text:g.name+" ("+g.region+", Gen "+g.gen+")"}))});
+gameSel.addEventListener("change",function(){pickGame(gameSel.value)});
+function renderGame(){
+  var g=GAME(),ng=S.meta.nextGame&&GAMES.byId[S.meta.nextGame]&&S.meta.nextGame!==gameId()?GAMES.byId[S.meta.nextGame]:null;
+  document.title="Soul Link "+g.title;$("gameH").textContent=g.title;$("tagline").textContent=tt("tag");
+  $("gameBox").hidden=!(canWrite&&backupAllowed());
+  fill(gameSel,ng?ng.id:g.id);
+  $("gameNote").textContent=ng?"Gilt ab „Neuer Run starten“. Bis dahin läuft "+g.name+".":"Wechsel gilt sofort, solange im Run nichts eingetragen ist, sonst ab „Neuer Run starten“. Routen und Level-Caps sind ein Vorschlag und lassen sich ändern.";
 }
 $("seedBtn").addEventListener("click",seedRoutes);
 $("moreBtn").addEventListener("click",function(){ui.showAll=!ui.showAll;renderList()});
@@ -572,9 +604,10 @@ var FW_SHAPES={
   ball:["....KKKKK....","..KKRRRRRKK..",".KRRRRRRRRRK.",".KRRRRRRRRRK.","KRRRRRRRRRRRK","KRRRRKKKRRRRK","KKKKKKWKKKKKK","KWWWWKKKWWWWK","KWWWWWWWWWWWK",".KWWWWWWWWWK.",".KWWWWWWWWWK.","..KKWWWWWKK..","....KKKKK...."],
   pika:["K.............K","KK...........KK",".KY.........YK.",".YY.........YY.","..YY.......YY..","..YYYYYYYYYYY..",".YYYYYYYYYYYYY.",".YYKKYYYYYKKYY.",".YYKKYYYYYKKYY.","YYYYYYYKYYYYYYY","YRRYYYYYYYYYRRY","YRRYYKYYYKYYRRY",".YYYYYKKKYYYYY.","..YYYYYYYYYYY..","....YYYYYYY...."]
 };
-/* Figuren der überlebenden Pokémon: Sprites aus Schwarz/Weiß (PokeAPI, #1–649), je Spieler bis zu zwei
+/* Figuren der überlebenden Pokémon: Sprites aus Schwarz/Weiß (PokeAPI, #1–649, danach die Standard-Sprites), je Spieler bis zu zwei
    zufällige Pokémon aus komplett lebenden Links, höchstens sechs. Fehlt ein Sprite, springt Pikachu ein. */
 var SPRITE_URL="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/";
+var SPRITE_URL_NEW="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
 function dexOf(name){var i=name?NORM.indexOf(norm(name)):-1;return i>-1?i+1:0}
 function winDex(){
   var per=IDX.map(function(){return []});
@@ -599,7 +632,7 @@ function spriteShape(dex){return new Promise(function(res){
     res({cols:cols,rows:rows,cells:cells});
   }catch(e){res(null)}};
   im.onerror=function(){res(null)};
-  im.src=SPRITE_URL+dex+".png";
+  im.src=(dex<=649?SPRITE_URL:SPRITE_URL_NEW)+dex+".png";
 })}
 function fireworks(){
   try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)return}catch(e){}
@@ -662,7 +695,7 @@ $("caps").addEventListener("change",function(e){var t=e.target;if(t.tagName!=="I
 var nrTimer;
 $("newRun").addEventListener("click",function(){
   var b=this;
-  if(b.getAttribute("data-sure")!=="1"){b.setAttribute("data-sure","1");b.textContent="Wirklich? Run "+((+S.meta.run.no||0)+1)+" starten";clearTimeout(nrTimer);nrTimer=setTimeout(function(){b.removeAttribute("data-sure");b.textContent="Neuer Run starten"},6000);return}
+  if(b.getAttribute("data-sure")!=="1"){b.setAttribute("data-sure","1");var ng=S.meta.nextGame&&GAMES.byId[S.meta.nextGame]&&S.meta.nextGame!==gameId()?GAMES.byId[S.meta.nextGame]:null;b.textContent="Wirklich? Run "+((+S.meta.run.no||0)+1)+(ng?" in "+ng.title:"")+" starten";clearTimeout(nrTimer);nrTimer=setTimeout(function(){b.removeAttribute("data-sure");b.textContent="Neuer Run starten"},6000);return}
   clearTimeout(nrTimer);b.removeAttribute("data-sure");b.textContent="Neuer Run starten";startNewRun();
 });
 
@@ -721,7 +754,7 @@ function applyRole(){
   $("bkSec").hidden=!backupAllowed();
   $("accSec").hidden=!(mode==="firebase"&&isAdmin);
   applyThemeRole();
-  renderBk();renderRun();
+  renderBk();renderRun();renderGame();
 }
 function renderAuth(){
   var box=$("auth"),t=$("authT"),b=$("authBtn");box.hidden=mode!=="firebase";if(box.hidden)return;
@@ -787,7 +820,6 @@ function setTheme(t,save){
   document.documentElement.setAttribute("data-theme",t);
   if(save){try{localStorage.setItem("soullink-theme",t)}catch(e){}}
   $("themeSeg").querySelectorAll("button").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-t")===t))});
-  $("tagline").textContent=tt("tag");
   renderAll();
 }
 $("themeSeg").addEventListener("click",function(e){var b=e.target.closest("button");if(b&&themeChoiceAllowed())setTheme(b.getAttribute("data-t"),true)});

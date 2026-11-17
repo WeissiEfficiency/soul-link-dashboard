@@ -5,7 +5,7 @@
 Einrichtung für eine neue Gruppe: `docs/INSTALLATION.md` und `tools/setup.py` (schreibt `config.js`, erzeugt `firestore.rules`, setzt Admin-UID und Spieleranzahl, leert `backups/`).
 
 
-Statische Seite ohne Build. `index.html` lädt `config.js`, `js/pokemon.js` und `js/app.js`. Beim Start wählt `app.js` einen Speicher-Adapter:
+Statische Seite ohne Build. `index.html` lädt `config.js`, `js/games.js`, `js/pokemon.js` und `js/app.js`. Beim Start wählt `app.js` einen Speicher-Adapter:
 
 | Modus | Bedingung | Speicher |
 |---|---|---|
@@ -26,6 +26,8 @@ run:     { no, status: "run"|"lost"|"won", enders: { p0: bool, ... }, where, cau
 tally:   { p0: { run, death, enc }, ... }      // Basiswerte abgeschlossener Runs
 caps:    { beaten: { g1: bool, ... }, lv: { g1: Zahl, ... } }   // lv = manuelle Abweichung
 backupAt: ISO-Zeitpunkt der letzten Sicherung oder ""      // gesetzt von „Backup kopieren“ / „Als Datei speichern“
+game:     Spiel-ID aus js/games.js, z. B. "pt"           // fehlt = "bw" (Schwarz/Weiß)
+nextGame: Spiel-ID für den nächsten Run oder ""
 ```
 
 **`routes/<id>`** (eine pro Route)
@@ -40,14 +42,24 @@ cause
 
 Routen-Status (`status()`): `miss` vor `dead` vor `alive`/`part`/`open`. Verpasst (`miss`) heißt, der Encounter ist verloren: Klick auf ∅ setzt die lebenden Pokémon der anderen auf `dead`, Zurücknehmen belebt sie wieder (außer wer unter „Tod bei“ steht). `dead` und `miss` sind verlorene Links (`isLost()`), stehen im Friedhof und in `history.deadLinks` (bei `miss` mit `killer` = erster, der nicht gefangen hat, und `cause` „nicht gefangen“).
 
-**Run-Status (`runState()`)**: „Verloren“ setzt der Knopf „Run verloren“ (`run.status = "lost"`, „Doch nicht verloren“ setzt zurück). „Gewonnen“ setzt entweder der Admin per Knopf „Run gewonnen“ (`run.status = "won"`, sichtbar nur bei `backupAllowed()`, also Admin bzw. Lokal-/Artifact-Modus; „Doch nicht gewonnen“ setzt zurück), oder es ergibt sich ohne Speichern, sobald jede Route außer dem Fossil gespielt ist (`played()`: Status nicht `open` und nicht `part`). „Neuer Run starten“ erscheint nur bei verloren oder gewonnen und schreibt den abgeleiteten Status in `history`. Wechselt der Status während die Seite offen ist auf gewonnen, startet `fireworks()` (Canvas, ca. 9 s, Farben aus den Theme-Variablen, aus bei `prefers-reduced-motion`). Erst zerplatzt eine Rakete zum Pokéball aus `FW_SHAPES` (Buchstaben K/R/W/Y = `--ink`, `--pink`, `--surface`, `--lemon`), danach je eine zu den Figuren der überlebenden Pokémon: `winDex()` nimmt je Spieler bis zu zwei zufällige Pokémon aus komplett lebenden Links (Name per `dexOf()` auf die Dex-Nummer), `spriteShape()` lädt das Schwarz/Weiß-Sprite von PokeAPI (`SPRITE_URL`, raw.githubusercontent.com, CORS offen) und rastert es auf höchstens 44 Pixel. Lädt ein Sprite nicht oder fehlen Pokémon-Namen, springt das Pikachu aus `FW_SHAPES` ein.
+**Run-Status (`runState()`)**: „Verloren“ setzt der Knopf „Run verloren“ (`run.status = "lost"`, „Doch nicht verloren“ setzt zurück). „Gewonnen“ setzt entweder der Admin per Knopf „Run gewonnen“ (`run.status = "won"`, sichtbar nur bei `backupAllowed()`, also Admin bzw. Lokal-/Artifact-Modus; „Doch nicht gewonnen“ setzt zurück), oder es ergibt sich ohne Speichern, sobald jede Route außer dem Fossil gespielt ist (`played()`: Status nicht `open` und nicht `part`). „Neuer Run starten“ erscheint nur bei verloren oder gewonnen und schreibt den abgeleiteten Status in `history`. Wechselt der Status während die Seite offen ist auf gewonnen, startet `fireworks()` (Canvas, ca. 9 s, Farben aus den Theme-Variablen, aus bei `prefers-reduced-motion`). Erst zerplatzt eine Rakete zum Pokéball aus `FW_SHAPES` (Buchstaben K/R/W/Y = `--ink`, `--pink`, `--surface`, `--lemon`), danach je eine zu den Figuren der überlebenden Pokémon: `winDex()` nimmt je Spieler bis zu zwei zufällige Pokémon aus komplett lebenden Links (Name per `dexOf()` auf die Dex-Nummer), `spriteShape()` lädt das Sprite von PokeAPI (`SPRITE_URL` Schwarz/Weiß bis #649, sonst `SPRITE_URL_NEW`; raw.githubusercontent.com, CORS offen) und rastert es auf höchstens 44 Pixel. Lädt ein Sprite nicht oder fehlen Pokémon-Namen, springt das Pikachu aus `FW_SHAPES` ein.
 
 **`history/<id>`** (eine pro abgeschlossenem Run, angelegt bei „Neuer Run starten“)
 ```
-no, status, enders, where, cause, endedAt, badges, lastCap, links,
+no, status, enders, where, cause, endedAt, badges, lastCap, links, game?,
 deadLinks: [{ route, nick, mons[Spieleranzahl], killer, deaths, cause }],
 perPlayer: { p0: { run, death, enc }, ... }
 ```
+
+## Spiele
+
+`js/games.js` legt `window.SOULLINK_GAMES` an: alle Hauptspiele von Rot/Blau bis Karmesin/Purpur (ohne Legenden-Spiele), je mit `id`, `name`, `title`, `region`, `gen`, `maxDex` (+ `extraDex`, z. B. Meltan/Melmetal bei Let's Go), `boost` (Dex-Bereich, den die Suche bevorzugt), `routes` und `caps`. Routen bekommen IDs `r01` … in Listenreihenfolge, Schwarz/Weiß behält seine festen alten IDs (`r42`, `r43`). Cap-IDs (`g1` … `g8`, `e4`, `ch`, `x1`, bei Schwarz/Weiß `n`, `gc`) sind über alle Spiele gleich, weil `caps.beaten` und `caps.lv` in den Regeln höchstens 20 Einträge haben dürfen.
+
+- `gameId()` / `GAME()` lesen `meta.game` (fehlt = `bw`). `caps()`, `seedRoutes()`, `search()` (nur Pokémon bis `maxDex`), `tt()` (Region im Untertitel) und `renderGame()` (Titel, Überschrift, Auswahl) hängen daran.
+- **Wechsel** nur durch den Admin (`backupAllowed()`, Auswahl `#gameSel` im Run-Kasten): Ist im Run nichts eingetragen (`runEmpty()`), wechselt `switchGame()` sofort. Sonst merkt sich `meta.nextGame` das Spiel, und „Neuer Run starten“ wechselt nach dem Eintrag in `history`. `switchGame()` schreibt die Routen des neuen Spiels (gleiche IDs werden überschrieben), löscht die übrigen (auch eigene Routen) und setzt alle Caps samt eigener Level zurück (`lv` auf 0 = Standard).
+- `history.game` wird nur geschrieben, wenn `meta.game` gesetzt ist; alte Runs ohne Feld gelten als Schwarz/Weiß. Die Auswertung zeigt das Spiel unter der Run-Nummer.
+- Feuerwerk: Sprites bis #649 aus Schwarz/Weiß, danach die Standard-Sprites von PokeAPI (`SPRITE_URL_NEW`).
+- Routen und Level sind ein Vorschlag (Level = stärkstes Pokémon des Gegners, Arenaleiter-Namen nach PokéWiki). Korrekturen gehören in `js/games.js`, nicht in die Datenbank.
 
 ## Designs (Themes)
 
@@ -55,7 +67,7 @@ Drei Designs mit denselben Bausteinen: `pokedex` (Standard für alle), `pastell`
 - **Wer wählen darf**: nur der Admin (Firebase-Modus) bzw. jeder im Lokal- und Artifact-Modus (`themeChoiceAllowed()`). Nur dann ist der Umschalter `#themeSeg` sichtbar. Alle anderen bekommen nach der Anmeldeprüfung immer `pokedex` (`applyThemeRole()`, aufgerufen aus `applyRole()`).
 - **Gemerkt** pro Gerät in `localStorage` (`soullink-theme`), nicht in der Datenbank. Ein kleines Skript im `<head>` setzt ein gespeichertes `pastell`/`lovecraft` vor dem ersten Zeichnen, damit es beim Admin nicht flackert; bei allen anderen schaltet `applyThemeRole()` nach der Anmeldeprüfung auf Pokédex zurück.
 - **Farben, Schriften, Formen**: nur über CSS-Variablen in `:root` (z. B. `--ink`, `--surface`, `--hdr`, `--mark`) und je Theme einen Block `:root[data-theme=…]` am Ende von `css/style.css`. Keine festen Farben in Bausteinen, neue Flächen bekommen eine Variable.
-- **Sprüche**: `THEME_TXT` in `js/app.js` (Untertitel, Run-Zeile, leerer Friedhof), abgerufen mit `tt(key)`.
+- **Sprüche**: `THEME_TXT` in `js/app.js` (Untertitel, Run-Zeile, leerer Friedhof), abgerufen mit `tt(key)`; `{R}` wird durch die Region des Spiels ersetzt.
 - Neues Theme: Eintrag in `THEMES` und `THEME_TXT`, Knopf in `#themeSeg`, CSS-Block. Schriften im Google-Fonts-Link in `index.html` (werden nur geladen, wenn sie genutzt werden).
 
 ## Anmeldung und Rechte (nur Firebase-Modus)

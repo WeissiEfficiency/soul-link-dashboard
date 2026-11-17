@@ -2,9 +2,9 @@
 
 ## Aktueller Stand
 
-Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus `firestore.rules` veröffentlicht). Die Firestore-Regeln prüfen das Datenmodell, die Seite erinnert an Sicherungen, Ansehen und Schreiben gehen nur mit Google-Anmeldung und Freigabe durch den Admin, und eine GitHub Action sichert täglich nach `backups/`. Spieleranzahl 2 bis 6 über `config.js`; andere Gruppen richten eigene Kopien mit `tools/setup.py` ein (`docs/INSTALLATION.md`).
+Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus `firestore.rules` veröffentlicht). Die Firestore-Regeln prüfen das Datenmodell, die Seite erinnert an Sicherungen, Ansehen und Schreiben gehen nur mit Google-Anmeldung und Freigabe durch den Admin, und eine GitHub Action sichert täglich nach `backups/`. Spieleranzahl 2 bis 6 über `config.js`; der Admin wählt das Spiel (Gen 1 bis 9, gilt ab dem nächsten Run). Andere Gruppen richten eigene Kopien mit `tools/setup.py` ein (`docs/INSTALLATION.md`).
 
-**Nächster Schritt:** T-009 (Google-E-Mails der Mitspieler unter „Schreibrechte“ eintragen), dann T-004.
+**Nächster Schritt:** Neue Firestore-Regeln veröffentlichen (T-018, sonst lässt sich das Spiel nicht wechseln), dann T-009 (Google-E-Mails der Mitspieler unter „Schreibrechte“ eintragen), dann T-004.
 
 ## Aufgaben
 
@@ -25,7 +25,9 @@ Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus
 | T-014 | Willkommensseite statt Dashboard für nicht freigegebene Konten | mittel | erledigt | M2 |
 | T-015 | Firestore-Lesen auf freigegebene Konten beschränken (Backup-Action braucht dann eigenen Zugang, öffentliche Backups im Repo bedenken) | mittel | offen | M2 |
 | T-016 | Anonymisiert, Spieleranzahl 2 bis 6, Einrichtungsskript und Installationsanleitung für andere Gruppen | mittel | erledigt | M2 |
-| T-017 | Saubere Vorlage ohne eigene Daten und Git-Verlauf (eigenes Template-Repo) | niedrig | Idee | M2 |
+| T-017 | Saubere Vorlage ohne eigene Daten und Git-Verlauf (Template-Repo `soul-link-dashboard`); Änderungen am Code dort nachziehen | niedrig | erledigt | M2 |
+| T-018 | Spiele-Schalter für den Admin: alle Hauptspiele Gen 1 bis 9 mit Routen, Level-Caps, 1025 Pokémon; gilt ab dem nächsten Run | mittel | erledigt (Regeln veröffentlichen) | M2 |
+| T-019 | Routen und Level-Caps der neuen Spiele beim Spielen prüfen und in `js/games.js` korrigieren (v. a. Alola, Galar, Paldea, Let's Go) | niedrig | offen | M2 |
 | T-009 | Google-E-Mails der Mitspieler unter „Schreibrechte“ eintragen | hoch | offen | M1 |
 
 ## Erledigt

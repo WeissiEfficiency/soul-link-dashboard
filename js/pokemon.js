@@ -1,4 +1,6 @@
-// Deutsche Pokémon-Namen #1 bis #649 (Gen 1 bis 5), Index + 1 = Pokédex-Nummer.
+// Deutsche Pokémon-Namen #1 bis #1025 (Gen 1 bis 9), Index + 1 = Pokédex-Nummer. Quelle: PokeAPI.
+// GEN_END[g-1] = letzte Dex-Nummer von Generation g.
+var GEN_END=[151,251,386,493,649,721,809,905,1025];
 var POKE=[]
 .concat([ // Gen 1 (#1 bis #151)
   "Bisasam","Bisaknosp","Bisaflor","Glumanda","Glutexo","Glurak","Schiggy","Schillok","Turtok","Raupy",
@@ -76,4 +78,51 @@ var POKE=[]
   "Gladiantri","Caesurio","Bisofank","Geronimatz","Washakwil","Skallyk","Grypheldis","Furnifraß","Fermicula","Kapuno",
   "Duodino","Trikephalo","Ignivor","Ramoth","Kobalium","Terrakium","Viridium","Boreos","Voltolos","Reshiram",
   "Zekrom","Demeteros","Kyurem","Keldeo","Meloetta","Genesect"
+])
+.concat([ // Gen 6 (#650 bis #721)
+  "Igamaro","Igastarnish","Brigaron","Fynx","Rutena","Fennexis","Froxy","Amphizel","Quajutsu","Scoppel",
+  "Grebbit","Dartiri","Dartignis","Fiaro","Purmel","Puponcho","Vivillon","Leufeo","Pyroleo","Flabébé",
+  "Floette","Florges","Mähikel","Chevrumm","Pam-Pam","Pandagro","Coiffwaff","Psiau","Psiaugon","Gramokles",
+  "Duokles","Durengard","Parfi","Parfinesse","Flauschling","Sabbaione","Iscalar","Calamanero","Bithora","Thanathora",
+  "Algitt","Tandrak","Scampisto","Wummer","Eguana","Elezard","Balgoras","Monargoras","Amarino","Amagarga",
+  "Feelinara","Resladero","Dedenne","Rocara","Viscora","Viscargot","Viscogon","Clavion","Paragoni","Trombork",
+  "Irrbis","Pumpdjinn","Arktip","Arktilas","eF-eM","UHaFnir","Xerneas","Yveltal","Zygarde","Diancie",
+  "Hoopa","Volcanion"
+])
+.concat([ // Gen 7 (#722 bis #809)
+  "Bauz","Arboretoss","Silvarro","Flamiau","Miezunder","Fuegro","Robball","Marikeck","Primarene","Peppeck",
+  "Trompeck","Tukanon","Mangunior","Manguspektor","Mabula","Akkup","Donarion","Krabbox","Krawell","Choreogel",
+  "Wommel","Bandelby","Wuffels","Wolwerock","Lusardin","Garstella","Aggrostella","Pampuli","Pampross","Araqua",
+  "Aranestro","Imantis","Mantidea","Bubungus","Lamellux","Molunk","Amfira","Velursi","Kosturso","Frubberl",
+  "Frubaila","Fruyal","Curelei","Kommandutan","Quartermak","Reißlaus","Tectass","Sankabuh","Colossand","Gufa",
+  "Typ:Null","Amigento","Meteno","Koalelu","Tortunator","Togedemaru","Mimigma","Knirfish","Sen-Long","Moruda",
+  "Miniras","Mediras","Grandiras","Kapu-Riki","Kapu-Fala","Kapu-Toro","Kapu-Kime","Cosmog","Cosmovum","Solgaleo",
+  "Lunala","Anego","Masskito","Schabelle","Voltriant","Kaguron","Katagami","Schlingking","Necrozma","Magearna",
+  "Marshadow","Venicro","Agoyon","Muramura","Kopplosio","Zeraora","Meltan","Melmetal"
+])
+.concat([ // Gen 8 (#810 bis #905)
+  "Chimpep","Chimstix","Gortrom","Hopplo","Kickerlo","Liberlo","Memmeon","Phlegleon","Intelleon","Raffel",
+  "Schlaraffel","Meikro","Kranoviz","Krarmor","Sensect","Keradar","Maritellit","Kleptifux","Gaunux","Cottini",
+  "Cottomi","Wolly","Zwollock","Kamehaps","Kamalm","Voldi","Bellektro","Klonkett","Wagong","Montecarbo",
+  "Knapfel","Drapfel","Schlapfel","Salanga","Sanaconda","Urgl","Pikuda","Barrakiefa","Toxel","Riffex",
+  "Thermopod","Infernopod","Klopptopus","Kaocto","Fatalitee","Mortipot","Brimova","Brimano","Silembrim","Bähmon",
+  "Pelzebub","Olangaar","Barrikadax","Mauzinger","Gorgasonn","Lauchzelot","Pantifrost","Oghnatoll","Hokumil","Pokusan",
+  "Legios","Britzigel","Snomnom","Mottineva","Humanolith","Kubuin","Servol","Morpeko","Kupfanti","Patinaraja",
+  "Lectragon","Lecryodon","Pescragon","Pescryodon","Duraludon","Grolldra","Phandra","Katapuldra","Zacian","Zamazenta",
+  "Endynalos","Dakuma","Wulaosu","Zarude","Regieleki","Regidrago","Polaross","Phantoross","Coronospa","Damythir",
+  "Axantor","Ursaluna","Salmagnis","Snieboss","Myriador","Cupidos"
+])
+.concat([ // Gen 9 (#906 bis #1025)
+  "Felori","Feliospa","Maskagato","Krokel","Lokroko","Skelokrok","Kwaks","Fuentente","Bailonda","Ferkuli",
+  "Fragrunz","Tarundel","Spinsidias","Micrick","Lextremo","Pamo","Pamamo","Pamomamo","Zwieps","Famieps",
+  "Hefel","Backel","Olini","Olivinio","Olithena","Krawalloro","Geosali","Sedisal","Saltigant","Knarbon",
+  "Crimanzo","Azugladis","Blipp","Wampitz","Voltrel","Voltrean","Mobtiff","Mastifioso","Sproxi","Affiti",
+  "Weherba","Horrerba","Tentagra","Tenterra","Klibbe","Chilingel","Halupenjo","Relluk","Skarabaks","Flattutu",
+  "Psiopatra","Forgita","Tafforgita","Granforgita","Schligda","Schligdri","Adebom","Normifin","Delfinator","Knattox",
+  "Knattatox","Mopex","Schlurm","Lumispross","Lumiflora","Gruff","Friedwuff","Flaminkno","Flaniwal","Kolowal",
+  "Agiluza","Heerashai","Nigiragi","Epitaff","Suelord","Farigiraf","Dummimisel","Gladimperio","Riesenzahn","Brüllschweif",
+  "Wutpilz","Flatterhaar","Kriechflügel","Sandfell","Eisenrad","Eisenbündel","Eisenhand","Eisenhals","Eisenfalter","Eisendorn",
+  "Frospino","Cryospino","Espinodon","Gierspenst","Monetigo","Chongjian","Baojian","Dinglu","Yuyu","Donnersichel",
+  "Eisenkrieger","Koraidon","Miraidon","Windewoge","Eisenblatt","Sirapfel","Mortcha","Fatalitcha","Boninu","Benesaru",
+  "Beatori","Ogerpon","Briduradon","Hydrapfel","Keilflamme","Furienblitz","Eisenfels","Eisenhaupt","Terapagos","Infamomo"
 ]);

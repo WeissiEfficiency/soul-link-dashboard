@@ -1,10 +1,20 @@
 # Changelog
 
+## 2026-11-17
+
+### Hinzugefügt
+- Spiele-Schalter für den Admin (im Run-Kasten): alle Hauptspiele von Rot/Blau bis Karmesin/Purpur samt Remakes und Let's Go, je mit Standard-Routen, Level-Caps und Region im Untertitel. Der Wechsel gilt sofort, solange im Run nichts eingetragen ist, sonst ab „Neuer Run starten“. Laufende Runs bleiben unberührt, die Auswertung zeigt das Spiel pro Run.
+- Pokémon-Suche kennt alle 1025 deutschen Namen und schlägt nur Pokémon des gewählten Spiels vor; das Feuerwerk zeigt auch Pokémon ab Gen 6.
+
+### Geändert
+- Firestore-Regeln erlauben `meta.game`, `meta.nextGame` und `history.game` (neu veröffentlichen).
+
 ## 2026-11-16
 
 ### Hinzugefügt
 - Spieleranzahl 2 bis 6 (`playerCount` in `config.js`): Routenzellen, Spielerkarten, Zähler, Tabellen, Run-Ender, Farben und Firestore-Regeln passen sich an.
 - Einrichtung für andere Gruppen: `tools/setup.py` (schreibt `config.js`, erzeugt `firestore.rules` aus `firestore.rules.template`, setzt Admin-UID und Spieleranzahl, leert alte Backups) und Anleitung `docs/INSTALLATION.md`. Ohne eingetragenen Admin zeigt die Willkommensseite die eigene UID samt Befehl.
+- Öffentliche Vorlage ohne Daten und Verlauf: github.com/WeissiEfficiency/soul-link-dashboard (Template-Repo, Anleitung verweist darauf).
 - Anonymisiert: keine Spielernamen, UIDs oder Projektdaten mehr in Code und Doku (nur noch in `config.js` und den Backups dieser Installation). Ohne Namen zeigt die Seite „Spieler 1“ usw.
 - Sieges-Feuerwerk zeigt die überlebenden Pokémon als Pixel-Explosion (Schwarz/Weiß-Sprites, je Spieler bis zu zwei), Pikachu nur noch als Ersatz.
 - Willkommensseite: Im Firebase-Modus sehen nur der Admin und die unter „Schreibrechte“ eingetragenen Google-Konten das Dashboard, alle anderen eine Willkommensseite mit Anmeldeknopf. Daten werden erst nach der Freigabe geladen.

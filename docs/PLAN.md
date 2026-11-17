@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Ein gemeinsames Dashboard für einen Soul Link mit 2 bis 6 Spielern in Pokémon Schwarz/Weiß. Es ersetzt die Google-Tabelle und hält fest, was pro Route gefangen wurde, wer welchen Encounter und welchen Run beendet hat, und wie sich die Gruppe über viele Runs schlägt.
+Ein gemeinsames Dashboard für einen Soul Link mit 2 bis 6 Spielern in einem Pokémon-Hauptspiel (Standard Schwarz/Weiß). Es ersetzt die Google-Tabelle und hält fest, was pro Route gefangen wurde, wer welchen Encounter und welchen Run beendet hat, und wie sich die Gruppe über viele Runs schlägt.
 
 ## Hausregeln, die das Dashboard abbildet
 
@@ -24,7 +24,6 @@ Ein gemeinsames Dashboard für einen Soul Link mit 2 bis 6 Spielern in Pokémon 
 
 - Feine Rechteverwaltung: Freigeschaltete dürfen alles außer Backup und Freischaltungen.
 - Team- und Typ-Prüfung, Encounter-Tabellen pro Route.
-- Andere Editionen als Schwarz/Weiß.
 
 ## Meilensteine
 

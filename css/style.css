@@ -70,6 +70,9 @@ input::placeholder,textarea::placeholder{color:var(--ph);font-weight:600}
 .l .lbl{color:var(--ink)}
 .rowflex{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
 .runstat{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.gamebox{max-width:460px}
+.gamebox select{font-weight:700}
+td .hg{display:block;font-size:11px;font-weight:600;color:var(--mute);white-space:nowrap}
 .runstat .chip{font-size:14px;padding:3px 12px}
 .fw{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:999}
 .runline{font-family:var(--display);font-size:19px;font-weight:700;line-height:1.25}

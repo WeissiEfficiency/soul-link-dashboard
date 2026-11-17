@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="pokedex" data-v="202611171132">
+<html lang="de" data-theme="pokedex" data-v="202611171350">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Soul Link Schwarz Weiß</title>
+<title>Soul Link</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Crimson+Pro:wght@400;500;600;700&family=Tiny5&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202611171132">
+<link rel="stylesheet" href="css/style.css?v=202611171350">
 <script>/* Theme vor dem ersten Zeichnen setzen (Standard Pokédex; andere Wahl nur für den Admin, prüft js/app.js nach der Anmeldung) */try{var t=localStorage.getItem("soullink-theme");if(t==="pastell"||t==="lovecraft")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body class="gated">
@@ -15,7 +15,7 @@
     <div class="brand">
       <div class="ball" aria-hidden="true"></div>
       <div>
-        <h1>Soul Link ✦ Schwarz &amp; Weiß</h1>
+        <h1>Soul Link ✦ <span id="gameH">Schwarz &amp; Weiß</span></h1>
         <p id="tagline">Einall · Soul Link · 3 Trainer</p>
       </div>
     </div>
@@ -58,6 +58,7 @@
         <p class="note" id="runHint" style="margin:0"></p></div>
       <div class="runline" id="runLine" aria-live="polite"></div>
       <button type="button" class="btn solid" id="newRun" hidden>Neuer Run starten</button>
+      <div class="field gamebox" id="gameBox" hidden><label class="lbl" for="gameSel">Spiel (nur für dich sichtbar)</label><select id="gameSel"></select><p class="note" id="gameNote" style="margin:0"></p></div>
     </div>
     <div>
       <div class="tw0"><table class="tally"><thead><tr><th>Spieler</th><th>Run</th><th>Death</th><th>Encounter</th></tr></thead><tbody id="tally"></tbody></table></div>
@@ -167,11 +168,12 @@
   </details>
 </section>
 
-<footer>✓ lebt, ✕ tot, ∅ nicht gefangen. Stirbt ein Pokémon, sterben die verbundenen mit und zählen als ein Encounter. Nicht gefangen (∅) zählt genauso: Der Link ist verloren, die verbundenen Pokémon sterben mit, und jeder, der nicht gefangen hat, bekommt einen Encounter. Der Spitzname gilt für alle Pokémon eines Links. Wer den Encounter getötet hat und bei wem das Pokémon im Kampf gefallen ist (Death), trägst du beim toten Link ein. Das Fossil zählt als Extra-Encounter, aber nur, wenn alle eins gefunden haben (｡•̀ᴗ-)✧</footer>
+<footer>✓ lebt, ✕ tot, ∅ nicht gefangen. Stirbt ein Pokémon, sterben die verbundenen mit und zählen als ein Encounter. Nicht gefangen (∅) zählt genauso: Der Link ist verloren, die verbundenen Pokémon sterben mit, und jeder, der nicht gefangen hat, bekommt einen Encounter. Der Spitzname gilt für alle Pokémon eines Links. Wer den Encounter getötet hat und bei wem das Pokémon im Kampf gefallen ist (Death), trägst du beim toten Link ein. Extra-Encounter wie Fossilien zählen nur, wenn alle eins gefunden haben (｡•̀ᴗ-)✧</footer>
 </main>
 
-<script src="config.js?v=202611171132"></script>
-<script src="js/pokemon.js?v=202611171132"></script>
-<script src="js/app.js?v=202611171132"></script>
+<script src="config.js?v=202611171350"></script>
+<script src="js/games.js?v=202611171350"></script>
+<script src="js/pokemon.js?v=202611171350"></script>
+<script src="js/app.js?v=202611171350"></script>
 </body>
 </html>

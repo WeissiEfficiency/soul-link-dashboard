@@ -57,12 +57,14 @@ service cloud.firestore {
         && smallMap(c.get('lv', {}), 20);
     }
     function validMeta(d) {
-      return d.keys().hasOnly(['players', 'run', 'tally', 'caps', 'backupAt'])
+      return d.keys().hasOnly(['players', 'run', 'tally', 'caps', 'backupAt', 'game', 'nextGame'])
         && validPlayers(d.get('players', {}))
         && validRun(d.get('run', {}))
         && players(d.get('tally', {}))
         && validCaps(d.get('caps', {}))
-        && str(d.get('backupAt', ''), 40);
+        && str(d.get('backupAt', ''), 40)
+        && str(d.get('game', ''), 20)
+        && str(d.get('nextGame', ''), 20);
     }
 
     match /meta/{doc} {
@@ -106,18 +108,19 @@ service cloud.firestore {
 
     match /routes/{id} {
       allow read: if true;
-      // r01 … r43 sind Standardrouten, c… sind selbst angelegte Routen.
+      // r01 … r99 sind Standardrouten des gewählten Spiels, c… sind selbst angelegte Routen.
       allow create, update: if isWriter() && id.matches('r[0-9]{2}|c[a-z0-9]{1,12}') && validRoute(request.resource.data);
       allow delete: if isWriter();
     }
 
     // ---------- history/<id>: ein abgeschlossener Run ----------
     function validHistory(d) {
-      return d.keys().hasOnly(['no', 'status', 'enders', 'where', 'cause', 'endedAt', 'badges', 'lastCap', 'links', 'deadLinks', 'perPlayer'])
+      return d.keys().hasOnly(['no', 'status', 'enders', 'where', 'cause', 'endedAt', 'badges', 'lastCap', 'links', 'deadLinks', 'perPlayer', 'game'])
         && str(d.get('where', ''), 200)
         && str(d.get('cause', ''), 300)
         && str(d.get('endedAt', ''), 40)
         && str(d.get('lastCap', ''), 60)
+        && str(d.get('game', ''), 20)
         && d.get('deadLinks', []) is list
         && d.get('deadLinks', []).size() <= 200
         && players(d.get('perPlayer', {}));

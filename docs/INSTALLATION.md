@@ -85,8 +85,9 @@ git push
 
 1. Ganz unten **Schreibrechte (nur für dich sichtbar)** öffnen, die Google-E-Mails der Mitspieler eintragen (eine pro Zeile, höchstens 10), **Speichern**.
 2. Bei **Spieler** die Namen eintragen.
-3. Bei **Routen und Fänge** auf **Standard-Routen anlegen** klicken.
-4. Den Link an die Mitspieler schicken. Sie melden sich mit dem eingetragenen Google-Konto an und können alles bearbeiten außer Backup und Freischaltungen.
+3. Im Run-Kasten unter **Spiel** euer Spiel wählen (Standard Schwarz & Weiß).
+4. Bei **Routen und Fänge** auf **Standard-Routen anlegen** klicken, falls noch keine da sind.
+5. Den Link an die Mitspieler schicken. Sie melden sich mit dem eingetragenen Google-Konto an und können alles bearbeiten außer Backup und Freischaltungen.
 
 Wer nicht freigeschaltet ist, sieht nur eine Willkommensseite.
 
@@ -95,6 +96,7 @@ Wer nicht freigeschaltet ist, sieht nur eine Willkommensseite.
 ## Später ändern
 
 - **Spieleranzahl**: `python tools/setup.py --players 4`, committen, pushen. Neue Spieler bekommen leere Spalten. Bei weniger Spielern bleiben die Daten der übrigen erhalten, werden aber nicht angezeigt. Die Regeln erlauben bis zu 6 Spieler und müssen dafür nicht neu veröffentlicht werden.
+- **Spiel**: im Run-Kasten unter **Spiel** (nur für den Admin sichtbar). Solange im Run nichts eingetragen ist, gilt es sofort, sonst ab **Neuer Run starten**. Routen und Level-Caps sind ein Vorschlag und lassen sich auf der Seite ändern.
 - **Admin wechseln**: `python tools/setup.py --admin NEUE-UID`, pushen, Regeln neu veröffentlichen.
 - **Regeln nach einem Update**: Ändert sich `firestore.rules.template`, `python tools/setup.py --rules` ausführen und die neue `firestore.rules` veröffentlichen.
 - **Neue Versionen**: Geänderte Dateien aus der Vorlage übernehmen, außer `config.js`, `firestore.rules` und `backups/` (das sind deine). Bei einem Fork geht das mit **Sync fork**, dabei deine `config.js` behalten. Danach `python tools/setup.py --rules` und die Regeln neu veröffentlichen, falls sich `firestore.rules.template` geändert hat.

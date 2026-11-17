@@ -28,7 +28,7 @@ def rewrite(rel, pattern, repl, expected):
 def main():
     v = datetime.datetime.now().strftime("%Y%m%d%H%M")
     rewrite("index.html", r'(<html [^>]*data-v=")[^"]*"', rf'\g<1>{v}"', 1)
-    rewrite("index.html", r'((?:css/style\.css|config\.js|js/pokemon\.js|js/app\.js)\?v=)[^"]*"', rf'\g<1>{v}"', 4)
+    rewrite("index.html", r'((?:css/style\.css|config\.js|js/games\.js|js/pokemon\.js|js/app\.js)\?v=)[^"]*"', rf'\g<1>{v}"', 5)
     rewrite("js/app.js", r'var APP_V="[^"]*";', f'var APP_V="{v}";', 1)
     print("Version", v)
 

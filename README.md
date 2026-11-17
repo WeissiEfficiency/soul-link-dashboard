@@ -1,18 +1,19 @@
-# Soul Link Dashboard – Pokémon Schwarz/Weiß
+# Soul Link Dashboard – Pokémon
 
-Dashboard für eine Pokémon-Soul-Link-Challenge in **Pokémon Schwarz/Weiß (deutsche Version)** mit **2 bis 6 Spielern**. Es zeigt Routen und Fänge, wer welchen Encounter getötet hat, Tode, Run-Zähler, Level-Caps und eine Auswertung über alle Runs. Alle Spieler sehen live denselben Stand.
+Dashboard für eine Pokémon-Soul-Link-Challenge in den **Pokémon-Hauptspielen von Rot/Blau bis Karmesin/Purpur (deutsche Version)** mit **2 bis 6 Spielern**. Es zeigt Routen und Fänge, wer welchen Encounter getötet hat, Tode, Run-Zähler, Level-Caps und eine Auswertung über alle Runs. Alle Spieler sehen live denselben Stand.
 
 **Eigene Installation:** Vorlage [soul-link-dashboard](https://github.com/WeissiEfficiency/soul-link-dashboard) mit **Use this template** kopieren und [docs/INSTALLATION.md](docs/INSTALLATION.md) folgen. Ein Skript (`python tools/setup.py`) erledigt die Einstellungen, der Rest sind ein paar Klicks bei GitHub und Firebase. Kostenlos.
 
 ## Funktionen
 
-- Routen von Avenitia bis zur Höhle der Prüfung, eigene Routen ergänzbar, Fossil als Extra-Encounter; die Routen erscheinen nacheinander, sobald die vorige eingetragen ist („Alle Routen zeigen“ blendet den Rest ein)
-- Ein Spitzname pro Route (gilt für alle Pokémon des Links), Pokémon pro Spieler optional mit Suche über alle 649 deutschen Namen (tippfehlertolerant, auch per Dex-Nummer)
+- Spiel wählbar (nur Admin, gilt ab dem nächsten Run): Rot/Blau, Gelb, Gold/Silber/Kristall, Rubin/Saphir, Smaragd, Feuerrot/Blattgrün, Diamant/Perl, Platin, HeartGold/SoulSilver, Schwarz/Weiß (Standard), Schwarz 2/Weiß 2, X/Y, Omega Rubin/Alpha Saphir, Sonne/Mond, Ultrasonne/Ultramond, Let's Go, Schwert/Schild, Strahlender Diamant/Leuchtende Perle, Karmesin/Purpur
+- Standard-Routen des Spiels, eigene Routen ergänzbar, Fossil als Extra-Encounter; die Routen erscheinen nacheinander, sobald die vorige eingetragen ist („Alle Routen zeigen“ blendet den Rest ein)
+- Ein Spitzname pro Route (gilt für alle Pokémon des Links), Pokémon pro Spieler optional mit Suche über die deutschen Namen des Spiels (bis zu 1025) (tippfehlertolerant, auch per Dex-Nummer)
 - Zustand pro Spieler: lebt, tot, nicht gefangen; stirbt einer oder fängt einer nicht, sterben die verbundenen mit
 - Run verloren per Knopf, gewonnen automatisch, sobald jede Route gespielt ist, oder per Admin-Knopf; Feuerwerk mit den Figuren der überlebenden Pokémon
 - Beim toten Link: wer den Encounter getötet hat, bei wem das Pokémon im Kampf gefallen ist (Death), Ursache
 - Run-Nummer und Gesamtstand Run, Death, Encounter pro Spieler (zählt automatisch, von Hand änderbar)
-- Level-Caps aller Arenaleiter, Top Vier, N und G-Cis zum Abhaken
+- Level-Caps aller Arenaleiter (bzw. Inselkönige), Top Vier und Champ zum Abhaken
 - Gesamtliste, Friedhof, Auswertung mit Run-Verlauf
 - Backup als Text oder Datei, tägliches automatisches Backup per GitHub Action
 - Google-Anmeldung: Nur freigeschaltete Konten sehen und bearbeiten das Dashboard, alle anderen eine Willkommensseite
