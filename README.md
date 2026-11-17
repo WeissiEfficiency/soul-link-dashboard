@@ -2,7 +2,7 @@
 
 Dashboard für eine Pokémon-Soul-Link-Challenge in **Pokémon Schwarz/Weiß (deutsche Version)** mit **2 bis 6 Spielern**. Es zeigt Routen und Fänge, wer welchen Encounter getötet hat, Tode, Run-Zähler, Level-Caps und eine Auswertung über alle Runs. Alle Spieler sehen live denselben Stand.
 
-**Eigene Installation:** [docs/INSTALLATION.md](docs/INSTALLATION.md). Ein Skript (`python tools/setup.py`) erledigt die Einstellungen, der Rest sind ein paar Klicks bei GitHub und Firebase. Kostenlos.
+**Eigene Installation:** Vorlage [soul-link-dashboard](https://github.com/WeissiEfficiency/soul-link-dashboard) mit **Use this template** kopieren und [docs/INSTALLATION.md](docs/INSTALLATION.md) folgen. Ein Skript (`python tools/setup.py`) erledigt die Einstellungen, der Rest sind ein paar Klicks bei GitHub und Firebase. Kostenlos.
 
 ## Funktionen
 

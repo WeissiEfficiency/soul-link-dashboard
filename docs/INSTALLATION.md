@@ -11,17 +11,17 @@ Wer nur ausprobieren will, kann Schritt 2 überspringen: Ohne Firebase speichert
 
 ---
 
-## 1. Repo kopieren
+## 1. Eigenes Repo anlegen
 
-1. Auf GitHub das Repo dieses Dashboards öffnen und oben rechts **Fork** klicken (oder **Use this template**, falls angeboten). Name z. B. `soul-link`.
-2. Die Kopie auf deinen Rechner holen:
+1. Die Vorlage <https://github.com/WeissiEfficiency/soul-link-dashboard> öffnen, **Use this template > Create a new repository** klicken, Name z. B. `soul-link`, Sichtbarkeit **Public** (GitHub Pages braucht ohne bezahltes GitHub-Konto ein öffentliches Repo), **Create repository**.
+2. Das neue Repo auf deinen Rechner holen:
 
    ```bash
    git clone https://github.com/DEIN-NAME/soul-link.git
    cd soul-link
    ```
 
-Die Kopie enthält noch die Einstellungen (`config.js`) und Backups (`backups/`) der ursprünglichen Gruppe. Beides ersetzt das Einrichtungsskript in Schritt 3.
+Die Vorlage enthält keine Daten einer anderen Gruppe, nur Platzhalter. Kopierst du stattdessen das Repo einer bestehenden Gruppe (Fork), ersetzt das Einrichtungsskript in Schritt 3 deren Einstellungen und löscht ihre Backups.
 
 ## 2. Firebase einrichten
 
@@ -51,7 +51,7 @@ Das Skript fragt nacheinander:
 | Wie viele Spieler | 2 bis 6 |
 | Admin-UID | leer lassen, sie kommt in Schritt 5 |
 | Adresse von `backups/latest.json` | Vorschlag mit Enter übernehmen |
-| Alte Backups löschen | `ja` |
+| Alte Backups löschen (nur bei einer Kopie mit Backups) | `ja` |
 
 Es schreibt `config.js` und `firestore.rules`. Danach hochladen:
 
@@ -64,7 +64,7 @@ git push
 ## 4. GitHub Pages und Backup einschalten
 
 1. Im Repo auf GitHub **Settings > Pages**: Source **Deploy from a branch**, Branch **main**, Ordner **/ (root)**, **Save**. Nach 1 bis 2 Minuten läuft die Seite unter `https://DEIN-NAME.github.io/soul-link/`.
-2. Reiter **Actions**: Bei einem Fork sind Actions zuerst aus. **I understand my workflows, go ahead and enable them** klicken. Danach sichert die Action **Backup** die Daten jeden Tag nach `backups/`.
+2. Reiter **Actions**: Steht dort ein Hinweis, dass Workflows ausgeschaltet sind (bei Forks üblich), **I understand my workflows, go ahead and enable them** klicken. Die Action **Backup** sichert die Daten dann jeden Tag nach `backups/`.
 
 ## 5. Admin werden
 
@@ -97,7 +97,7 @@ Wer nicht freigeschaltet ist, sieht nur eine Willkommensseite.
 - **Spieleranzahl**: `python tools/setup.py --players 4`, committen, pushen. Neue Spieler bekommen leere Spalten. Bei weniger Spielern bleiben die Daten der übrigen erhalten, werden aber nicht angezeigt. Die Regeln erlauben bis zu 6 Spieler und müssen dafür nicht neu veröffentlicht werden.
 - **Admin wechseln**: `python tools/setup.py --admin NEUE-UID`, pushen, Regeln neu veröffentlichen.
 - **Regeln nach einem Update**: Ändert sich `firestore.rules.template`, `python tools/setup.py --rules` ausführen und die neue `firestore.rules` veröffentlichen.
-- **Updates vom Original holen**: Auf GitHub in deinem Fork **Sync fork**. Behalte dabei deine `config.js`.
+- **Neue Versionen**: Geänderte Dateien aus der Vorlage übernehmen, außer `config.js`, `firestore.rules` und `backups/` (das sind deine). Bei einem Fork geht das mit **Sync fork**, dabei deine `config.js` behalten. Danach `python tools/setup.py --rules` und die Regeln neu veröffentlichen, falls sich `firestore.rules.template` geändert hat.
 
 ## Wenn etwas nicht klappt
 
