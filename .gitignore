@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/
+*.log
+.env
+.env.*
+# lokale Backups nicht versehentlich committen
+soullink-backup-*.json
+__pycache__/
+*.pyc

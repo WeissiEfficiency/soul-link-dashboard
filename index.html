@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="pokedex" data-v="202611171132">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soul Link Schwarz Weiß</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Crimson+Pro:wght@400;500;600;700&family=Tiny5&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=202611171132">
+<script>/* Theme vor dem ersten Zeichnen setzen (Standard Pokédex; andere Wahl nur für den Admin, prüft js/app.js nach der Anmeldung) */try{var t=localStorage.getItem("soullink-theme");if(t==="pastell"||t==="lovecraft")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body class="gated">
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="ball" aria-hidden="true"></div>
+      <div>
+        <h1>Soul Link ✦ Schwarz &amp; Weiß</h1>
+        <p id="tagline">Einall · Soul Link · 3 Trainer</p>
+      </div>
+    </div>
+    <div class="topr">
+      <div class="seg themeseg" id="themeSeg" role="group" aria-label="Design (nur für dich sichtbar)" hidden>
+        <button type="button" data-t="pokedex" aria-pressed="true">Pokédex</button><button type="button" data-t="pastell" aria-pressed="false">Pastell</button><button type="button" data-t="lovecraft" aria-pressed="false">Lovecraft</button>
+      </div>
+      <div class="sync" id="sync" data-s="load" role="status"><i></i><span id="syncT">Lädt …</span></div>
+      <div class="auth" id="auth" hidden><span id="authT"></span><button type="button" class="btn authbtn" id="authBtn" hidden>Mit Google anmelden</button></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section class="card gate" id="gate" data-s="load" aria-live="polite">
+  <div class="gate-ball" aria-hidden="true"></div>
+  <h2 id="gateT">Einen Moment …</h2>
+  <p id="gateP">Anmeldung wird geprüft.</p>
+  <button type="button" class="btn solid" id="gateBtn" hidden>Mit Google anmelden</button>
+</section>
+
+<div class="card bkwarn" id="bkWarn" role="status" hidden>
+  <span class="bkwarn-i" aria-hidden="true">!</span>
+  <p><b id="bkWarnT">Es gibt noch keine Sicherung der Daten.</b> Eine Sicherung als Datei schützt euren Run, falls online etwas verloren geht.</p>
+  <button type="button" class="btn solid" id="bkWarnGo">Jetzt sichern</button>
+</div>
+
+<section aria-labelledby="h-run">
+  <div class="sec-h"><h2 id="h-run">Run</h2><small>Die Zahlen zählen automatisch mit und lassen sich von Hand ändern.</small></div>
+  <div class="card run">
+    <div class="l">
+      <div class="rowflex">
+        <div class="field"><span class="lbl" id="runNoL">Run Nr.</span>
+          <div class="stepper big"><button type="button" class="stp" id="runNoM" aria-label="Run-Nummer verringern">−</button><input type="text" inputmode="numeric" id="runNo" aria-labelledby="runNoL"><button type="button" class="stp" id="runNoP" aria-label="Run-Nummer erhöhen">+</button></div></div>
+        <div class="capnow"><span>Level-Cap</span><b id="capLv">–</b><span id="capWho"></span></div>
+      </div>
+      <div class="field"><span class="lbl">Status</span>
+        <div class="runstat"><span class="chip run" id="runChip">Läuft</span><button type="button" class="btn" id="runLost">Run verloren</button><button type="button" class="btn" id="runWon" hidden title="Nur für dich sichtbar">Run gewonnen</button><button type="button" class="btn" id="runBack" hidden>Doch nicht verloren</button></div>
+        <p class="note" id="runHint" style="margin:0"></p></div>
+      <div class="runline" id="runLine" aria-live="polite"></div>
+      <button type="button" class="btn solid" id="newRun" hidden>Neuer Run starten</button>
+    </div>
+    <div>
+      <div class="tw0"><table class="tally"><thead><tr><th>Spieler</th><th>Run</th><th>Death</th><th>Encounter</th></tr></thead><tbody id="tally"></tbody></table></div>
+      <p class="note">Run = Run beendet. Death = Pokémon im Kampf gefallen. Encounter = Encounter getötet. Grüne Zahl: davon im aktuellen Run. Ist der Run verloren oder gewonnen, erscheint „Neuer Run starten“: speichert den Run in der Auswertung, übernimmt die Zahlen und leert Routen und Level-Caps.</p>
+    </div>
+  </div>
+  <div class="card runend" id="runEnd" hidden>
+    <div class="field"><span class="lbl">Run beendet von</span>
+      <div class="chips" id="enders" role="group" aria-label="Run beendet von"></div></div>
+    <div class="field"><label for="runWhere">Wo / gegen wen</label><input type="text" id="runWhere" placeholder="z. B. Turner, Route 6"></div>
+    <div class="field"><label for="runCause">Ursache</label><input type="text" id="runCause" placeholder="z. B. Crit, Fehlklick"></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-cap">
+  <div class="sec-h"><h2 id="h-cap">Level-Caps</h2><small>Level = höchstes Pokémon des Gegners. Zahl anklicken zum Ändern, Haken setzen wenn besiegt.</small></div>
+  <div class="caps" id="caps"></div>
+</section>
+
+<section aria-labelledby="h-kpi">
+  <div class="sec-h"><h2 id="h-kpi">Überblick</h2><small id="kpiNote"></small></div>
+  <div class="kpis" id="kpis"></div>
+</section>
+
+<section aria-labelledby="h-pl">
+  <div class="sec-h"><h2 id="h-pl">Spieler</h2><small>Namen anklicken zum Ändern</small></div>
+  <div class="players" id="players"></div>
+</section>
+
+<section aria-labelledby="h-rt">
+  <div class="sec-h"><h2 id="h-rt">Routen und Fänge</h2><small id="rtCount"></small></div>
+  <div class="tools">
+    <div class="seg" id="viewSeg" role="group" aria-label="Ansicht">
+      <button type="button" data-v="edit" aria-pressed="true">Bearbeiten</button>
+      <button type="button" data-v="all" aria-pressed="false">Gesamtliste</button>
+    </div>
+    <div class="seg" id="filter" role="group" aria-label="Filter">
+      <button type="button" data-v="all" aria-pressed="true">Alle</button>
+      <button type="button" data-v="open">Offen</button>
+      <button type="button" data-v="alive">Lebendig</button>
+      <button type="button" data-v="dead">Tot</button>
+      <button type="button" data-v="miss">Verpasst</button>
+    </div>
+    <div class="grow"><label class="lbl" for="q" style="position:absolute;left:-9999px">Suchen</label><input type="text" id="q" placeholder="Route, Spitzname oder Pokémon suchen"></div>
+  </div>
+  <div class="list" id="list"></div>
+  <div class="tools listfoot" id="listFoot"><button type="button" class="btn solid" id="addBtn">Route hinzufügen</button><button type="button" class="btn" id="moreBtn" aria-expanded="false" hidden>Alle Routen zeigen</button></div>
+  <div id="viewAll" hidden>
+    <div class="tools" style="margin-top:14px"><button type="button" class="btn" id="copyBtn">Gesamtliste als Text kopieren</button><span id="copyNote" class="lbl" role="status"></span></div>
+    <div class="card tw"><table>
+      <thead><tr><th>Nr.</th><th>Route</th><th>Spitzname</th><th id="allHead"></th><th>Status</th><th>Encounter getötet von</th><th>Tod bei</th><th>Ursache</th></tr></thead>
+      <tbody id="allBody"></tbody></table></div>
+  </div>
+  <div class="card empty" id="empty" hidden><span id="emptyT"></span><button type="button" class="btn solid" id="seedBtn" hidden>Standard-Routen anlegen</button></div>
+</section>
+
+<section aria-labelledby="h-gr">
+  <div class="sec-h"><h2 id="h-gr">Friedhof</h2><small>Alle gestorbenen Links in diesem Run</small></div>
+  <div class="card tw" style="margin-top:0"><table>
+    <thead><tr><th>Route</th><th>Spitzname</th><th>Encounter getötet von</th><th id="graveHead"></th><th>Tod bei</th><th>Ursache</th></tr></thead>
+    <tbody id="grave"></tbody></table></div>
+</section>
+
+<section aria-labelledby="h-an">
+  <div class="sec-h"><h2 id="h-an">Auswertung</h2><small id="anaNote"></small></div>
+  <div class="ana" id="anaTotals"></div>
+  <div class="ana2" id="anaKpis"></div>
+  <div class="ana3">
+    <div class="card box"><h3>Häufigste Run-Enden</h3><div id="anaWhere"></div></div>
+    <div class="card box"><h3>Gefährlichste Routen</h3><div id="anaRoutes"></div></div>
+  </div>
+  <div class="card tw"><table>
+    <thead><tr><th>Run</th><th>Ergebnis</th><th>Beendet von</th><th>Wo / gegen wen</th><th>Orden</th><th>Links</th><th>Tote Links</th><th>Datum</th></tr></thead>
+    <tbody id="histBody"></tbody></table></div>
+</section>
+
+<section aria-labelledby="h-acc" id="accSec" hidden>
+  <details class="card">
+    <summary id="h-acc">Schreibrechte (nur für dich sichtbar)</summary>
+    <div class="acc">
+      <label for="accEmails">Google-E-Mails, die eintragen dürfen (eine pro Zeile)</label>
+      <textarea id="accEmails" placeholder="name@gmail.com"></textarea>
+      <p class="note" style="margin:0">Du selbst darfst immer schreiben. Wer hier steht, kann nach der Anmeldung alles außer Backup bearbeiten. Ohne Anmeldung kann man nur lesen.</p>
+      <div class="tools"><button type="button" class="btn solid" id="accSave">Speichern</button></div>
+      <div class="status" id="accS" role="status"></div>
+    </div>
+  </details>
+</section>
+
+<section aria-labelledby="h-bk" id="bkSec">
+  <details class="card" id="bkBox">
+    <summary id="h-bk">Daten sichern und umziehen</summary>
+    <div class="bk">
+      <div class="col">
+        <p class="note" style="margin:0">Sichert alles (Spieler, Zähler, Routen, Run-Verlauf) als Text. Damit ziehst du die Daten auch auf die GitHub-Seite um.</p>
+        <div class="tools"><button type="button" class="btn" id="bkCopy">Backup kopieren</button><button type="button" class="btn" id="bkDl" hidden>Als Datei speichern</button></div>
+        <div class="status" id="bkS1" role="status"></div>
+        <p class="note" id="bkLast" style="margin:0"></p>
+      </div>
+      <div class="col">
+        <label for="bkIn">Backup einspielen (ersetzt die aktuellen Daten)</label>
+        <textarea id="bkIn" placeholder="Backup-Text hier einfügen"></textarea>
+        <div class="tools"><input type="file" id="bkFile" accept=".json,application/json,text/plain" aria-label="Backup-Datei wählen"><button type="button" class="btn solid" id="bkGo">Backup einspielen</button></div>
+        <div class="status" id="bkS2" role="status"></div>
+      </div>
+    </div>
+  </details>
+</section>
+
+<footer>✓ lebt, ✕ tot, ∅ nicht gefangen. Stirbt ein Pokémon, sterben die verbundenen mit und zählen als ein Encounter. Nicht gefangen (∅) zählt genauso: Der Link ist verloren, die verbundenen Pokémon sterben mit, und jeder, der nicht gefangen hat, bekommt einen Encounter. Der Spitzname gilt für alle Pokémon eines Links. Wer den Encounter getötet hat und bei wem das Pokémon im Kampf gefallen ist (Death), trägst du beim toten Link ein. Das Fossil zählt als Extra-Encounter, aber nur, wenn alle eins gefunden haben (｡•̀ᴗ-)✧</footer>
+</main>
+
+<script src="config.js?v=202611171132"></script>
+<script src="js/pokemon.js?v=202611171132"></script>
+<script src="js/app.js?v=202611171132"></script>
+</body>
+</html>

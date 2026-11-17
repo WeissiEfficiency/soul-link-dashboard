@@ -1,0 +1,145 @@
+rules_version = '2';
+
+// Firestore-Regeln für das Soul-Link-Dashboard.
+// VORLAGE: Nicht direkt einfügen. `python tools/setup.py --rules` erzeugt daraus firestore.rules
+// mit der Admin-UID aus config.js. Die fertige Datei dann in der Firebase-Konsole einfügen:
+// Firestore > Regeln > alles ersetzen > Veröffentlichen.
+//
+// Lesen darf jeder mit dem Link. Schreiben darf nur, wer mit Google angemeldet ist und
+// entweder Admin ist (UID unten, gleiche UID in config.js) oder dessen E-Mail in access/main steht.
+// access/main pflegt der Admin im Dashboard unter „Schreibrechte“.
+// Außerdem nur Daten in der Form des Dashboards: bekannte Felder, begrenzte Textlängen, keine fremden
+// Sammlungen. Run-Daten (meta) und Run-Verlauf (history) können nicht gelöscht werden.
+// Datenmodell: docs/ARCHITEKTUR.md. Neue Felder dort UND hier ergänzen, sonst schlägt Speichern fehl.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Wer darf schreiben ----------
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == '__ADMIN_UID__';
+    }
+    function isWriter() {
+      return isAdmin() || (
+        request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() in get(/databases/$(database)/documents/access/main).data.get('emails', [])
+      );
+    }
+
+    function str(v, max) { return v is string && v.size() <= max; }
+    // Bis zu sechs Spieler (p0 … p5), wie viele es sind, steht in config.js (playerCount).
+    function players(m) { return m is map && m.keys().hasOnly(['p0', 'p1', 'p2', 'p3', 'p4', 'p5']); }
+    function smallMap(m, max) { return m is map && m.size() <= max; }
+
+    // ---------- meta/main: Spieler, aktueller Run, Zähler, Level-Caps ----------
+    function validRun(r) {
+      return r is map
+        && r.keys().hasOnly(['no', 'status', 'enders', 'where', 'cause'])
+        && r.get('no', 1) is int
+        && r.get('status', 'run') in ['run', 'lost', 'won']
+        && players(r.get('enders', {}))
+        && str(r.get('where', ''), 200)
+        && str(r.get('cause', ''), 300);
+    }
+    function validPlayers(p) {
+      return players(p)
+        && str(p.get('p0', {}).get('name', ''), 40)
+        && str(p.get('p1', {}).get('name', ''), 40)
+        && str(p.get('p2', {}).get('name', ''), 40)
+        && str(p.get('p3', {}).get('name', ''), 40)
+        && str(p.get('p4', {}).get('name', ''), 40)
+        && str(p.get('p5', {}).get('name', ''), 40);
+    }
+    function validCaps(c) {
+      return c is map
+        && c.keys().hasOnly(['beaten', 'lv'])
+        && smallMap(c.get('beaten', {}), 20)
+        && smallMap(c.get('lv', {}), 20);
+    }
+    function validMeta(d) {
+      return d.keys().hasOnly(['players', 'run', 'tally', 'caps', 'backupAt'])
+        && validPlayers(d.get('players', {}))
+        && validRun(d.get('run', {}))
+        && players(d.get('tally', {}))
+        && validCaps(d.get('caps', {}))
+        && str(d.get('backupAt', ''), 40);
+    }
+
+    match /meta/{doc} {
+      allow read: if true;
+      allow create, update: if isWriter() && doc == 'main' && validMeta(request.resource.data);
+      allow delete: if false;
+    }
+
+    // ---------- routes/<id>: eine Route ----------
+    function validCell(c) {
+      return c is map
+        && c.keys().hasOnly(['sp', 'nick', 'st'])
+        && str(c.get('sp', ''), 30)
+        && str(c.get('nick', ''), 40)
+        && c.get('st', '') in ['', 'alive', 'dead', 'miss'];
+    }
+    function validCells(c) {
+      return players(c)
+        && validCell(c.get('p0', {}))
+        && validCell(c.get('p1', {}))
+        && validCell(c.get('p2', {}))
+        && validCell(c.get('p3', {}))
+        && validCell(c.get('p4', {}))
+        && validCell(c.get('p5', {}));
+    }
+    function validRoute(d) {
+      return d.keys().hasOnly(['order', 'name', 'nick', 'extra', 'hint', 'custom', 'cells', 'killer', 'deaths', 'cause'])
+        && d.get('order', 0) is number
+        && str(d.get('name', ''), 80)
+        && str(d.get('nick', ''), 40)
+        && str(d.get('cause', ''), 300)
+        && str(d.get('hint', ''), 300)
+        && d.get('extra', false) is bool
+        && d.get('custom', false) is bool
+        && d.get('killer', -1) is int
+        && d.get('killer', -1) >= -1
+        && d.get('killer', -1) <= 5
+        && players(d.get('deaths', {}))
+        && validCells(d.get('cells', {}));
+    }
+
+    match /routes/{id} {
+      allow read: if true;
+      // r01 … r43 sind Standardrouten, c… sind selbst angelegte Routen.
+      allow create, update: if isWriter() && id.matches('r[0-9]{2}|c[a-z0-9]{1,12}') && validRoute(request.resource.data);
+      allow delete: if isWriter();
+    }
+
+    // ---------- history/<id>: ein abgeschlossener Run ----------
+    function validHistory(d) {
+      return d.keys().hasOnly(['no', 'status', 'enders', 'where', 'cause', 'endedAt', 'badges', 'lastCap', 'links', 'deadLinks', 'perPlayer'])
+        && str(d.get('where', ''), 200)
+        && str(d.get('cause', ''), 300)
+        && str(d.get('endedAt', ''), 40)
+        && str(d.get('lastCap', ''), 60)
+        && d.get('deadLinks', []) is list
+        && d.get('deadLinks', []).size() <= 200
+        && players(d.get('perPlayer', {}));
+    }
+
+    match /history/{id} {
+      allow read: if true;
+      allow create: if isWriter() && id.matches('run[0-9]+-[a-z0-9]+') && validHistory(request.resource.data);
+      // Abgeschlossene Runs ändern sich nicht. Gleiche Daten erneut schreiben (Backup einspielen) ist erlaubt.
+      allow update: if isWriter() && request.resource.data == resource.data;
+      allow delete: if false;
+    }
+
+    // ---------- access/main: Liste der freigeschalteten Google-E-Mails ----------
+    // Lesbar für Freigeschaltete (so erkennt die Seite, ob jemand schreiben darf), ändern nur der Admin.
+    match /access/{doc} {
+      allow read: if isWriter();
+      allow write: if isAdmin() && doc == 'main'
+        && request.resource.data.keys().hasOnly(['emails'])
+        && request.resource.data.emails is list
+        && request.resource.data.emails.size() <= 10;
+    }
+  }
+}

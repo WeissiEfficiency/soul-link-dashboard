@@ -1,0 +1,38 @@
+# Tägliches Backup der Firestore-Daten ins Repo (Ordner backups/).
+# Committet nur, wenn sich seit dem letzten Backup etwas geändert hat.
+# Von Hand starten: GitHub > Actions > "Backup" > "Run workflow".
+name: Backup
+
+on:
+  schedule:
+    - cron: "17 3 * * *"   # täglich 03:17 UTC (04:17 / 05:17 deutscher Zeit)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Daten aus Firestore sichern
+        run: python3 tools/backup.py
+
+      - name: Committen, falls sich etwas geändert hat
+        run: |
+          git add backups
+          if git diff --cached --quiet; then
+            echo "Nichts zu committen."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Backup $(date -u +%Y-%m-%d)"
+          git push
