@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-11-26
+
+### Hinzugefügt
+- Team: Lebende Links lassen sich mit „☆ Ins Team“ markieren (höchstens sechs). Eine Leiste über den Routen zeigt das Team mit Sprites und Typen je Spieler und warnt, wenn ein Spieler zwei Team-Pokémon mit gleichem Primärtyp hat. Stirbt ein Link, fällt er aus dem Team; ein neuer Run leert es.
+- Routen zeigen neben dem eingetragenen Pokémon sein Sprite und seine Typen (passend zur Generation des Spiels).
+- Dupe-Hinweis: Fängt ein Spieler ein Pokémon, dessen Entwicklungsreihe er in einer früheren Route schon gefangen hat, steht „⚠ Dupe“ in der Zelle. Gesperrt wird nichts.
+- Schwächen-Karte (unter den Level-Caps): Gegner-Pokémon suchen (auch Regionalformen wie Alola-Vulpix) oder ein bis zwei Typen antippen. Zeigt, welche Angriffstypen 4×, 2×, ½×, ¼× oder gar nicht wirken, was der Gegner hart trifft und welche Typen alles aushalten. „Euer Team“ bewertet jedes lebende Pokémon des Runs (trifft / kassiert) und markiert den besten Konter je Spieler. Die ganze Typentabelle lässt sich aufklappen. Alles richtet sich nach der Generation des gewählten Spiels (Gen 1 ohne Unlicht/Stahl, bis Gen 5 ohne Fee, alte Typen wie Piepi als Normal). Nichts wird gespeichert, auch ohne Schreibrecht nutzbar.
+
+### Geändert
+- Firestore-Regeln erlauben `routes/<id>.team` (neu veröffentlichen).
+
 ## 2026-11-17
 
 ### Hinzugefügt

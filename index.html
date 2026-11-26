@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="pokedex" data-v="202611171350">
+<html lang="de" data-theme="pokedex" data-v="202611262332">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Soul Link</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Crimson+Pro:wght@400;500;600;700&family=Tiny5&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202611171350">
+<link rel="stylesheet" href="css/style.css?v=202611262332">
 <script>/* Theme vor dem ersten Zeichnen setzen (Standard Pokédex; andere Wahl nur für den Admin, prüft js/app.js nach der Anmeldung) */try{var t=localStorage.getItem("soullink-theme");if(t==="pastell"||t==="lovecraft")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body class="gated">
@@ -78,6 +78,24 @@
   <div class="caps" id="caps"></div>
 </section>
 
+<section aria-labelledby="h-wk">
+  <div class="sec-h"><h2 id="h-wk">Schwächen</h2><small id="wkNote">Gegner wählen: Pokémon suchen oder Typen antippen.</small></div>
+  <div class="card wk">
+    <div class="wk-in">
+      <div class="field"><label for="wkQ">Gegner-Pokémon</label>
+        <div class="wk-q"><input type="text" id="wkQ" placeholder="z. B. Glurak oder 6" role="combobox" aria-autocomplete="list" aria-controls="pk" aria-expanded="false" autocomplete="off"><button type="button" class="btn" id="wkClear" hidden>Leeren</button></div></div>
+      <div class="field"><span class="lbl" id="wkTL">oder Typen (bis zu zwei)</span><div class="tys" id="wkTypes" role="group" aria-labelledby="wkTL"></div></div>
+      <p class="note" id="wkGen" style="margin:0"></p>
+    </div>
+    <div class="wk-out" id="wkOut" aria-live="polite"></div>
+  </div>
+  <details class="card wkchart" id="wkChartBox">
+    <summary>Ganze Typentabelle</summary>
+    <p class="note" style="margin:0 16px 10px">Zeile = Angriffstyp, Spalte = Typ des Getroffenen. Die Spalten des gewählten Gegners sind markiert.</p>
+    <div class="tw0" id="wkChart"></div>
+  </details>
+</section>
+
 <section aria-labelledby="h-kpi">
   <div class="sec-h"><h2 id="h-kpi">Überblick</h2><small id="kpiNote"></small></div>
   <div class="kpis" id="kpis"></div>
@@ -86,6 +104,12 @@
 <section aria-labelledby="h-pl">
   <div class="sec-h"><h2 id="h-pl">Spieler</h2><small>Namen anklicken zum Ändern</small></div>
   <div class="players" id="players"></div>
+</section>
+
+<section aria-labelledby="h-team">
+  <div class="sec-h"><h2 id="h-team">Team</h2><small id="teamNote"></small></div>
+  <div class="team" id="team"></div>
+  <div class="card teamwarn" id="teamWarn" role="status" hidden></div>
 </section>
 
 <section aria-labelledby="h-rt">
@@ -171,9 +195,11 @@
 <footer>✓ lebt, ✕ tot, ∅ nicht gefangen. Stirbt ein Pokémon, sterben die verbundenen mit und zählen als ein Encounter. Nicht gefangen (∅) zählt genauso: Der Link ist verloren, die verbundenen Pokémon sterben mit, und jeder, der nicht gefangen hat, bekommt einen Encounter. Der Spitzname gilt für alle Pokémon eines Links. Wer den Encounter getötet hat und bei wem das Pokémon im Kampf gefallen ist (Death), trägst du beim toten Link ein. Extra-Encounter wie Fossilien zählen nur, wenn alle eins gefunden haben (｡•̀ᴗ-)✧</footer>
 </main>
 
-<script src="config.js?v=202611171350"></script>
-<script src="js/games.js?v=202611171350"></script>
-<script src="js/pokemon.js?v=202611171350"></script>
-<script src="js/app.js?v=202611171350"></script>
+<script src="config.js?v=202611262332"></script>
+<script src="js/games.js?v=202611262332"></script>
+<script src="js/pokemon.js?v=202611262332"></script>
+<script src="js/evo.js?v=202611262332"></script>
+<script src="js/types.js?v=202611262332"></script>
+<script src="js/app.js?v=202611262332"></script>
 </body>
 </html>

@@ -92,7 +92,7 @@ service cloud.firestore {
         && validCell(c.get('p5', {}));
     }
     function validRoute(d) {
-      return d.keys().hasOnly(['order', 'name', 'nick', 'extra', 'hint', 'custom', 'cells', 'killer', 'deaths', 'cause'])
+      return d.keys().hasOnly(['order', 'name', 'nick', 'extra', 'hint', 'custom', 'team', 'cells', 'killer', 'deaths', 'cause'])
         && d.get('order', 0) is number
         && str(d.get('name', ''), 80)
         && str(d.get('nick', ''), 40)
@@ -100,6 +100,7 @@ service cloud.firestore {
         && str(d.get('hint', ''), 300)
         && d.get('extra', false) is bool
         && d.get('custom', false) is bool
+        && d.get('team', false) is bool
         && d.get('killer', -1) is int
         && d.get('killer', -1) >= -1
         && d.get('killer', -1) <= 5

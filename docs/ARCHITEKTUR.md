@@ -5,7 +5,7 @@
 Einrichtung für eine neue Gruppe: `docs/INSTALLATION.md` und `tools/setup.py` (schreibt `config.js`, erzeugt `firestore.rules`, setzt Admin-UID und Spieleranzahl, leert `backups/`).
 
 
-Statische Seite ohne Build. `index.html` lädt `config.js`, `js/games.js`, `js/pokemon.js` und `js/app.js`. Beim Start wählt `app.js` einen Speicher-Adapter:
+Statische Seite ohne Build. `index.html` lädt `config.js`, `js/games.js`, `js/pokemon.js`, `js/evo.js`, `js/types.js` und `js/app.js`. Beim Start wählt `app.js` einen Speicher-Adapter:
 
 | Modus | Bedingung | Speicher |
 |---|---|---|
@@ -32,7 +32,7 @@ nextGame: Spiel-ID für den nächsten Run oder ""
 
 **`routes/<id>`** (eine pro Route)
 ```
-order, name, nick, extra?, hint?, custom?
+order, name, nick, extra?, hint?, custom?, team?          // team: Link steht im Team (zählt nur, solange er lebt)
 cells:  { p0: { sp, st: ""|"alive"|"dead"|"miss" }, ... }   // sp = Pokémon, optional
 killer: Spielerindex 0–5 oder -1                              // Encounter getötet von
 deaths: { p0: bool, ... }                                     // Tod bei
@@ -60,6 +60,23 @@ perPlayer: { p0: { run, death, enc }, ... }
 - `history.game` wird nur geschrieben, wenn `meta.game` gesetzt ist; alte Runs ohne Feld gelten als Schwarz/Weiß. Die Auswertung zeigt das Spiel unter der Run-Nummer.
 - Feuerwerk: Sprites bis #649 aus Schwarz/Weiß, danach die Standard-Sprites von PokeAPI (`SPRITE_URL_NEW`).
 - Routen und Level sind ein Vorschlag (Level = stärkstes Pokémon des Gegners, Arenaleiter-Namen nach PokéWiki). Korrekturen gehören in `js/games.js`, nicht in die Datenbank.
+
+## Team, Sprites, Dupes
+
+- **Team**: Knopf „☆ Ins Team“ an jeder komplett lebenden Route setzt `routes/<id>.team`. `onTeam()` zählt nur lebende Links, höchstens sechs (`teamIds()`); stirbt ein Link, fällt er automatisch heraus. „Neuer Run starten“ setzt `team` überall zurück. `renderTeam()` zeigt die Leiste `#team` mit Sprites und Typen je Spieler.
+- **Typen**: aus `typesOfName()` (Daten der Schwächen-Karte, richtet sich nach der Generation des Spiels). `teamClashes()` meldet pro Spieler zwei Team-Pokémon mit gleichem Primärtyp (`#teamWarn`), nur als Hinweis.
+- **Dupes**: `earlierCatch()` sucht pro Spieler eine frühere Route (kleinere `order`), in der er ein Pokémon derselben Entwicklungsreihe (`POKE_CHAIN` aus `js/evo.js`) gefangen hat (lebt oder tot). Die Zelle zeigt dann „⚠ Dupe“, gesperrt wird nichts.
+- **Sprites in Zellen**: `cellExtras()` setzt Sprite (`spriteUrl()`, Schwarz/Weiß-Sprites bis #649, sonst Standard-Sprites von PokeAPI) und Typ-/Dupe-Zeile, sobald der Name einem Pokémon entspricht (`dexOf()`, kennt auch Regionalformen).
+- `js/evo.js` ist aus der PokeAPI-Datei `pokemon_species.csv` (`evolution_chain_id`) erzeugt; nicht von Hand ändern.
+
+## Schwächen-Karte
+
+Bereich „Schwächen“ unter den Level-Caps. Reiner Anzeige-Zustand (`wk` in `js/app.js`), nichts wird gespeichert, keine Firestore-Regeln betroffen; funktioniert in allen Modi und auch ohne Schreibrecht.
+- **Daten**: `js/types.js` (aus den PokeAPI-CSV-Dateien erzeugt, nicht von Hand bearbeiten) mit `POKE_TYPES` (zwei Zeichen je Dex-Nummer, `a` = Normal … `r` = Fee, `-` = kein Zweittyp), `POKE_TYPES_PAST` (frühere Typen, z. B. vor der Fee) und `POKE_FORMS` (Regionalformen Alola, Galar, Hisui, Paldea mit eigener Typ-Kombination).
+- **Typentabelle**: `EFF` (Stand ab Gen 6), `chart(gen)` leitet daraus die Tabellen für Gen 1 (15 Typen, alte Ausnahmen) und Gen 2 bis 5 (17 Typen, Stahl widersteht Geist und Unlicht) ab. Maßgeblich ist `gen` des gewählten Spiels.
+- **Eingabe**: Pokémon über dieselbe Vorschlagsliste wie die Routen (`showPk(inp, Einträge)`, `wkSearch()` ergänzt Regionalformen) oder ein bis zwei Typ-Knöpfe.
+- **Ausgabe** (`renderWk()`): Angriffstypen nach Faktor, was die Typen des Gegners hart treffen, welche Typen alles aushalten, und „Euer Team“: für jedes lebende Pokémon des Runs (`typesOfName()`, auch „Alola-Vulpix“) der beste Faktor der eigenen Typen und der härteste Treffer vom Typ des Gegners, mit Tipp je Spieler. Fähigkeiten und Items sind nicht eingerechnet.
+- Typfarben als `--ty0` … `--ty17` in `:root`, Bausteine setzen `--tyc`.
 
 ## Designs (Themes)
 

@@ -4,7 +4,7 @@
 
 Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus `firestore.rules` veröffentlicht). Die Firestore-Regeln prüfen das Datenmodell, die Seite erinnert an Sicherungen, Ansehen und Schreiben gehen nur mit Google-Anmeldung und Freigabe durch den Admin, und eine GitHub Action sichert täglich nach `backups/`. Spieleranzahl 2 bis 6 über `config.js`; der Admin wählt das Spiel (Gen 1 bis 9, gilt ab dem nächsten Run). Andere Gruppen richten eigene Kopien mit `tools/setup.py` ein (`docs/INSTALLATION.md`).
 
-**Nächster Schritt:** Neue Firestore-Regeln veröffentlichen (T-018, sonst lässt sich das Spiel nicht wechseln), dann T-009 (Google-E-Mails der Mitspieler unter „Schreibrechte“ eintragen), dann T-004.
+**Nächster Schritt:** T-009 (Google-E-Mails der Mitspieler unter „Schreibrechte“ eintragen), dann T-004.
 
 ## Aufgaben
 
@@ -14,7 +14,7 @@ Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus
 | T-002 | GitHub Pages aktivieren (Settings > Pages > main, root) | hoch | erledigt | M1 |
 | T-003 | Backup aus claude.ai kopieren und auf der GitHub-Seite einspielen | hoch | erledigt | M1 |
 | T-004 | Link an die Mitspieler schicken, gemeinsam testen | mittel | offen | M1 |
-| T-005 | Dupe-Hinweis, wenn eine Art im Run schon gefangen wurde (falls ihr die Regel spielt) | niedrig | Idee | M2 |
+| T-005 | Dupe-Hinweis, wenn eine Art im Run schon gefangen wurde (falls ihr die Regel spielt) | niedrig | erledigt (pro Spieler, ganze Entwicklungsreihe) | M2 |
 | T-006 | Automatischer Smoke-Test (Playwright) für Eintragen, Tod, Neuer Run | niedrig | Idee | M2 |
 | T-007 | Regelmäßiges Backup erinnern (z. B. Hinweis, wenn letzte Sicherung alt ist) | niedrig | erledigt | M2 |
 | T-008 | Firebase App Check (reCAPTCHA), damit nur die eigene Seite schreiben darf | niedrig | verworfen (durch Anmeldung erledigt) | M2 |
@@ -28,6 +28,8 @@ Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus
 | T-017 | Saubere Vorlage ohne eigene Daten und Git-Verlauf (Template-Repo `soul-link-dashboard`); Änderungen am Code dort nachziehen | niedrig | erledigt | M2 |
 | T-018 | Spiele-Schalter für den Admin: alle Hauptspiele Gen 1 bis 9 mit Routen, Level-Caps, 1025 Pokémon; gilt ab dem nächsten Run | mittel | erledigt (Regeln veröffentlichen) | M2 |
 | T-019 | Routen und Level-Caps der neuen Spiele beim Spielen prüfen und in `js/games.js` korrigieren (v. a. Alola, Galar, Paldea, Let's Go) | niedrig | offen | M2 |
+| T-020 | Schwächen-Karte: Gegner-Pokémon oder Typen wählen, Angriffstypen, Gefahren und passende Pokémon des Teams, Typentabelle je Generation | mittel | erledigt | M2 |
+| T-021 | Team (bis 6 Links) mit Leiste, Sprites und Typen in den Routen, Hinweis bei gleichem Primärtyp im Team | mittel | erledigt | M2 |
 | T-009 | Google-E-Mails der Mitspieler unter „Schreibrechte“ eintragen | hoch | offen | M1 |
 
 ## Erledigt

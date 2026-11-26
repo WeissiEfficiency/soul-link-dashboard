@@ -7,7 +7,7 @@ Soul-Link-Dashboard für alle Pokémon-Hauptspiele (Gen 1 bis 9, deutsch, Standa
 ## Befehle
 
 - Lokal starten: `python3 -m http.server 8000`, dann http://localhost:8000
-- Syntax prüfen: `node --check js/app.js && node --check js/games.js && node --check js/pokemon.js`
+- Syntax prüfen: `node --check js/app.js && node --check js/games.js && node --check js/pokemon.js && node --check js/types.js && node --check js/evo.js`
 - Version setzen (vor jedem Commit mit Änderungen an `index.html`, `css/` oder `js/`): `python tools/bump.py`
 - Deploy: Push auf `main`, GitHub Pages veröffentlicht automatisch.
 
@@ -18,6 +18,8 @@ Soul-Link-Dashboard für alle Pokémon-Hauptspiele (Gen 1 bis 9, deutsch, Standa
 - `js/app.js`: gesamte Logik (Speicher-Adapter, Rendering, Zähler, Suche)
 - `js/games.js`: Spiele für den Spiele-Schalter (Region, Generation, Dex-Bereich, Standard-Routen, Level-Caps)
 - `js/pokemon.js`: 1025 deutsche Pokémon-Namen (Gen 1 bis 9), Index + 1 = Dex-Nummer
+- `js/types.js`: Typen aller Pokémon und Regionalformen für die Schwächen-Karte, die Team-Leiste und die Routen (aus PokeAPI erzeugt)
+- `js/evo.js`: Entwicklungsreihe jedes Pokémon (`POKE_CHAIN`) für den Dupe-Hinweis (aus PokeAPI erzeugt)
 - `config.js`: Einstellungen dieser Installation (Firebase-Werte, `playerCount`, `adminUid`, `autoBackupUrl`), erzeugt von `tools/setup.py`; Platzhalter `DEIN-PROJEKT` = lokaler Modus
 - `firestore.rules.template`: Quelle der Firestore-Regeln mit Platzhalter `__ADMIN_UID__`. Hier ändern, dann `python tools/setup.py --rules`
 - `firestore.rules`: daraus erzeugt, wird in der Firebase-Konsole eingefügt (nicht automatisch)
