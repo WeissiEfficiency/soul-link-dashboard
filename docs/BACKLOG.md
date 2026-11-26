@@ -30,6 +30,7 @@ Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus
 | T-019 | Routen und Level-Caps der neuen Spiele beim Spielen prüfen und in `js/games.js` korrigieren (v. a. Alola, Galar, Paldea, Let's Go) | niedrig | offen | M2 |
 | T-020 | Schwächen-Karte: Gegner-Pokémon oder Typen wählen, Angriffstypen, Gefahren und passende Pokémon des Teams, Typentabelle je Generation | mittel | erledigt | M2 |
 | T-021 | Team (bis 6 Links) mit Leiste, Sprites und Typen in den Routen, Hinweis bei gleichem Primärtyp im Team | mittel | erledigt | M2 |
+| T-022 | Auswertung nach Spiel filtern, „Verpasst“ pro Spieler, „Gestoppt vor“ (Level-Cap, an dem Runs enden) | mittel | erledigt | M2 |
 | T-009 | Google-E-Mails der Mitspieler unter „Schreibrechte“ eintragen | hoch | offen | M1 |
 
 ## Erledigt

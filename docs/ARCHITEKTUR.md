@@ -48,7 +48,7 @@ Routen-Status (`status()`): `miss` vor `dead` vor `alive`/`part`/`open`. Verpass
 ```
 no, status, enders, where, cause, endedAt, badges, lastCap, links, game?,
 deadLinks: [{ route, nick, mons[Spieleranzahl], killer, deaths, cause }],
-perPlayer: { p0: { run, death, enc }, ... }
+perPlayer: { p0: { run, death, enc, miss? }, ... }   // miss: wie oft nicht gefangen (ab 2026-11-26)
 ```
 
 ## Spiele
@@ -58,6 +58,7 @@ perPlayer: { p0: { run, death, enc }, ... }
 - `gameId()` / `GAME()` lesen `meta.game` (fehlt = `bw`). `caps()`, `seedRoutes()`, `search()` (nur Pokémon bis `maxDex`), `tt()` (Region im Untertitel) und `renderGame()` (Titel, Überschrift, Auswahl) hängen daran.
 - **Wechsel** nur durch den Admin (`backupAllowed()`, Auswahl `#gameSel` im Run-Kasten): Ist im Run nichts eingetragen (`runEmpty()`), wechselt `switchGame()` sofort. Sonst merkt sich `meta.nextGame` das Spiel, und „Neuer Run starten“ wechselt nach dem Eintrag in `history`. `switchGame()` schreibt die Routen des neuen Spiels (gleiche IDs werden überschrieben), löscht die übrigen (auch eigene Routen) und setzt alle Caps samt eigener Level zurück (`lv` auf 0 = Standard).
 - `history.game` wird nur geschrieben, wenn `meta.game` gesetzt ist; alte Runs ohne Feld gelten als Schwarz/Weiß. Die Auswertung zeigt das Spiel unter der Run-Nummer.
+- **Auswertung je Spiel**: Gibt es Runs aus mehr als einem Spiel (inkl. laufendem), erscheint im Kopf der Auswertung `#anaGame` (Filter nur im Browser, `ui.anaGame`, auch ohne Schreibrecht nutzbar). „Alle Spiele“ nimmt die Zähler aus dem Run-Kasten (`totalOf()`, inkl. Startwerten), ein einzelnes Spiel die Summe aus `perPlayer` der gespeicherten Runs plus den laufenden Run, falls er dieses Spiel ist. „Verpasst“ zählt `perPlayer.miss` (ältere Runs ohne Feld: Links mit Ursache „nicht gefangen“, nur der erste Verpasser) plus `missLive()`. „Gestoppt vor“ zählt `lastCap` verlorener Runs.
 - Feuerwerk: Sprites bis #649 aus Schwarz/Weiß, danach die Standard-Sprites von PokeAPI (`SPRITE_URL_NEW`).
 - Routen und Level sind ein Vorschlag (Level = stärkstes Pokémon des Gegners, Arenaleiter-Namen nach PokéWiki). Korrekturen gehören in `js/games.js`, nicht in die Datenbank.
 

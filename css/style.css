@@ -276,7 +276,11 @@ tr[data-st=dead] .mon.d{text-decoration:line-through;color:var(--mute)}
 th.pk0{background:var(--p0)}th.pk1{background:var(--p1)}th.pk2{background:var(--p2)}th.pk3{background:var(--p3)}th.pk4{background:var(--p4)}th.pk5{background:var(--p5)}
 
 /* Auswertung */
-.ana{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ana{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.anaf{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.anaf select{width:auto;max-width:100%}
+body.ro #anaGame{pointer-events:auto;opacity:1}
+.ana .note{margin:6px 0 0;font-size:12px}
 .box{padding:14px}
 .box h3{font-size:20px;margin-bottom:8px}
 .bar{display:grid;grid-template-columns:minmax(0,92px) minmax(0,1fr) 72px;gap:8px;align-items:center;margin:7px 0;font-weight:800}
@@ -288,7 +292,8 @@ th.pk0{background:var(--p0)}th.pk1{background:var(--p1)}th.pk2{background:var(--
 .bar .vl small{font:800 11px var(--body);color:var(--mute);margin-left:4px}
 .bar[data-p="0"]{--pc:var(--p0)}.bar[data-p="1"]{--pc:var(--p1)}.bar[data-p="2"]{--pc:var(--p2)}.bar[data-p="3"]{--pc:var(--p3)}.bar[data-p="4"]{--pc:var(--p4)}.bar[data-p="5"]{--pc:var(--p5)}.bar[data-p="x"]{--pc:var(--lilac)}
 .ana2{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
-.ana3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.ana3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.ana3 .bar{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 36px}
 .empty2{color:var(--mute);font-weight:700;margin:4px 0}
 
 /* Backup */

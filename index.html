@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="pokedex" data-v="202611262332">
+<html lang="de" data-theme="pokedex" data-v="202611262343">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Soul Link</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Crimson+Pro:wght@400;500;600;700&family=Tiny5&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202611262332">
+<link rel="stylesheet" href="css/style.css?v=202611262343">
 <script>/* Theme vor dem ersten Zeichnen setzen (Standard Pokédex; andere Wahl nur für den Admin, prüft js/app.js nach der Anmeldung) */try{var t=localStorage.getItem("soullink-theme");if(t==="pastell"||t==="lovecraft")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body class="gated">
@@ -147,11 +147,12 @@
 </section>
 
 <section aria-labelledby="h-an">
-  <div class="sec-h"><h2 id="h-an">Auswertung</h2><small id="anaNote"></small></div>
+  <div class="sec-h"><h2 id="h-an">Auswertung</h2><div class="anaf"><select id="anaGame" aria-label="Auswertung nach Spiel filtern" hidden></select><small id="anaNote"></small></div></div>
   <div class="ana" id="anaTotals"></div>
   <div class="ana2" id="anaKpis"></div>
   <div class="ana3">
     <div class="card box"><h3>Häufigste Run-Enden</h3><div id="anaWhere"></div></div>
+    <div class="card box"><h3>Gestoppt vor (Level-Cap)</h3><div id="anaStop"></div></div>
     <div class="card box"><h3>Gefährlichste Routen</h3><div id="anaRoutes"></div></div>
   </div>
   <div class="card tw"><table>
@@ -195,11 +196,11 @@
 <footer>✓ lebt, ✕ tot, ∅ nicht gefangen. Stirbt ein Pokémon, sterben die verbundenen mit und zählen als ein Encounter. Nicht gefangen (∅) zählt genauso: Der Link ist verloren, die verbundenen Pokémon sterben mit, und jeder, der nicht gefangen hat, bekommt einen Encounter. Der Spitzname gilt für alle Pokémon eines Links. Wer den Encounter getötet hat und bei wem das Pokémon im Kampf gefallen ist (Death), trägst du beim toten Link ein. Extra-Encounter wie Fossilien zählen nur, wenn alle eins gefunden haben (｡•̀ᴗ-)✧</footer>
 </main>
 
-<script src="config.js?v=202611262332"></script>
-<script src="js/games.js?v=202611262332"></script>
-<script src="js/pokemon.js?v=202611262332"></script>
-<script src="js/evo.js?v=202611262332"></script>
-<script src="js/types.js?v=202611262332"></script>
-<script src="js/app.js?v=202611262332"></script>
+<script src="config.js?v=202611262343"></script>
+<script src="js/games.js?v=202611262343"></script>
+<script src="js/pokemon.js?v=202611262343"></script>
+<script src="js/evo.js?v=202611262343"></script>
+<script src="js/types.js?v=202611262343"></script>
+<script src="js/app.js?v=202611262343"></script>
 </body>
 </html>

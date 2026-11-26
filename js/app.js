@@ -3,7 +3,7 @@
 "use strict";
 /* Versionsschutz: passt index.html nicht zu dieser Datei (Browser-Cache nach einem Deploy), einmal neu laden.
    APP_V setzt tools/bump.py zusammen mit data-v und ?v= in index.html. */
-var APP_V="202611262332";
+var APP_V="202611262343";
 var HTML_V=document.documentElement.getAttribute("data-v");
 if(HTML_V&&HTML_V!==APP_V){try{var rk="soullink-reload-"+HTML_V+"-"+APP_V;if(!sessionStorage.getItem(rk)){sessionStorage.setItem(rk,"1");location.reload();return}}catch(e){}}
 /* Spieler: Anzahl aus config.js (playerCount, 2 bis 6, Standard 3). Schlüssel p0 … p5, Namen stehen in meta.players. */
@@ -30,7 +30,7 @@ var S={meta:defMeta(),routes:new Map(),history:[]};
 var store=null, mode="local", canWrite=true, loaded=false, routesLoaded=false;
 var auth=null, authUser=null, isAdmin=false, authKnown=false;   // nur im Firebase-Modus
 var pend=new Map(), busy=new Set(), metaPend=null, metaBusy=false, timers=new Map(), metaTimer=null;
-var ui={filter:"all",q:"",view:"edit",showAll:false};
+var ui={filter:"all",q:"",view:"edit",showAll:false,anaGame:"all"};
 var $=function(id){return document.getElementById(id)};
 
 function el(tag,attrs,kids){var e=document.createElement(tag);if(attrs)for(var k in attrs){if(k==="text")e.textContent=attrs[k];else if(k==="class")e.className=attrs[k];else e.setAttribute(k,attrs[k]);}(kids||[]).forEach(function(c){e.appendChild(c)});return e}
@@ -385,6 +385,7 @@ function live(i){var o={run:0,death:0,enc:0},rn=S.meta.run;
     if(st==="dead"){if((r.deaths||{})[P[i]])o.death++;if(r.killer===i)o.enc++}
     else if(st==="miss"&&cellOf(r,i).st==="miss")o.enc++});
   return o}
+function missLive(i){var n=0;S.routes.forEach(function(r){if(status(r)==="miss"&&cellOf(r,i).st==="miss")n++});return n}
 function baseOf(i,k){var t=(S.meta.tally||{})[P[i]]||{};return +t[k]||0}
 function totalOf(i,k){return baseOf(i,k)+live(i)[k]}
 function renderTally(){
@@ -576,23 +577,43 @@ $("wkTypes").addEventListener("click",function(e){var b=e.target.closest(".tyb")
 function barRow(label,p,val,max,extra){var w=max>0?Math.round(val/max*100):0;
   return el("div",{class:"bar","data-p":p},[el("span",{class:"nmb",text:label}),el("div",{class:"tr"},[el("div",{class:"fl",style:"width:"+w+"%"})]),el("span",{class:"vl"},[document.createTextNode(String(val))].concat(extra?[el("small",{text:extra})]:[]))])}
 function topList(map,n){return Object.keys(map).map(function(k){return [k,map[k]]}).sort(function(a,b){return b[1].n-a[1].n}).slice(0,n)}
+function hGame(h){return h.game||GAMES.def}
+/* Verpasst pro Spieler in einem gespeicherten Run. Ältere Runs ohne perPlayer.miss: nur der erste, der nicht gefangen hat (killer). */
+function missOfHist(h,i){var p=(h.perPlayer||{})[P[i]]||{};if(typeof p.miss==="number")return p.miss;
+  return (h.deadLinks||[]).filter(function(d){return d.cause==="nicht gefangen"&&d.killer===i}).length}
+function anaGames(){var s={};S.history.forEach(function(h){s[hGame(h.data)]=1});s[gameId()]=1;
+  return GAMES.list.filter(function(g){return s[g.id]}).map(function(g){return g.id})}
+function bars(box,vals){var sum=vals.reduce(function(a,b){return a+b},0),max=Math.max.apply(null,vals);
+  vals.forEach(function(v,i){box.appendChild(barRow(pname(i),i,v,max,sum?Math.round(v/sum*100)+" %":""))});return sum}
 function renderAna(){
+  var gs=anaGames(),gsel=$("anaGame");
+  if(ui.anaGame!=="all"&&gs.indexOf(ui.anaGame)<0)ui.anaGame="all";
+  gsel.textContent="";gsel.appendChild(el("option",{value:"all",text:"Alle Spiele"}));
+  gs.forEach(function(id){gsel.appendChild(el("option",{value:id,text:GAME(id).name}))});
+  gsel.value=ui.anaGame;gsel.hidden=gs.length<2;
+  var fg=ui.anaGame,curIn=fg==="all"||gameId()===fg;
+  var H=S.history.map(function(h){return h.data}).filter(function(h){return fg==="all"||hGame(h)===fg}).sort(function(a,b){return (a.no||0)-(b.no||0)});
+  /* Alle Spiele: Zähler aus dem Run-Kasten (inkl. Startwerten). Ein Spiel: Summe der gespeicherten Runs plus laufender Run, falls er dieses Spiel ist. */
+  var tv=function(i,k){if(fg==="all")return totalOf(i,k);
+    return H.reduce(function(a,h){return a+(+(((h.perPlayer||{})[P[i]]||{})[k])||0)},0)+(curIn?live(i)[k]:0)};
   var tot=$("anaTotals");tot.textContent="";
-  TK.forEach(function(k){var vals=IDX.map(function(i){return totalOf(i,k[0])}),sum=vals.reduce(function(a,b){return a+b},0),max=Math.max.apply(null,vals);
-    var box=el("div",{class:"card box"},[el("h3",{text:k[1]+" gesamt: "+sum})]);
-    vals.forEach(function(v,i){box.appendChild(barRow(pname(i),i,v,max,sum?Math.round(v/sum*100)+" %":""))});
-    tot.appendChild(box)});
-  var H=S.history.map(function(h){return h.data}).sort(function(a,b){return (a.no||0)-(b.no||0)});
-  $("anaNote").textContent=H.length?H.length+(H.length===1?" Run gespeichert":" Runs gespeichert"):"Runs werden ab dem nächsten „Neuer Run starten“ gespeichert";
+  TK.forEach(function(k){var box=el("div",{class:"card box"},[el("h3")]),sum=bars(box,IDX.map(function(i){return tv(i,k[0])}));
+    box.firstChild.textContent=k[1]+" gesamt: "+sum;tot.appendChild(box)});
+  var mb=el("div",{class:"card box"},[el("h3")]),ms=bars(mb,IDX.map(function(i){return H.reduce(function(a,h){return a+missOfHist(h,i)},0)+(curIn?missLive(i):0)}));
+  mb.firstChild.textContent="Verpasst gesamt: "+ms;
+  mb.appendChild(el("p",{class:"note",text:"Wie oft jemand auf einer Route nicht gefangen hat (gespeicherte Runs und laufender Run). Steckt auch in den Encountern."}));
+  tot.appendChild(mb);
+  $("anaNote").textContent=(H.length?H.length+(H.length===1?" Run gespeichert":" Runs gespeichert"):(fg==="all"?"Runs werden ab dem nächsten „Neuer Run starten“ gespeichert":"Noch kein Run gespeichert"))+(fg!=="all"?" · "+GAME(fg).name:"");
   var k=$("anaKpis");k.textContent="";
   var avg=function(f){return H.length?(H.reduce(function(a,h){return a+f(h)},0)/H.length):0};
   var best=H.slice().sort(function(a,b){return (b.badges||0)-(a.badges||0)||(b.links||0)-(a.links||0)})[0];
   [["Gespeicherte Runs",String(H.length)],["Ø Links pro Run",H.length?avg(function(h){return h.links||0}).toFixed(1).replace(".",","):"–"],["Ø Orden pro Run",H.length?avg(function(h){return h.badges||0}).toFixed(1).replace(".",","):"–"],["Bester Run",best?"Run "+best.no+" · "+(best.badges||0)+" Orden":"–"]]
     .forEach(function(it){k.appendChild(el("div",{class:"card kpi"},[el("b",{text:it[1],style:"font-size:28px"}),el("span",{text:it[0]})]))});
-  var where={},routes={};
+  var where={},routes={},stop={};
+  H.forEach(function(h){var c=h.lastCap;if(h.status==="lost"&&c&&c!=="alle"){stop[c]=stop[c]||{n:0,label:c};stop[c].n++}});
   H.forEach(function(h){var w=(h.where||"").trim();if(h.status==="lost"&&w){var key=w.toLowerCase();where[key]=where[key]||{n:0,label:w};where[key].n++}
     (h.deadLinks||[]).forEach(function(d){var key=(d.route||"?");routes[key]=routes[key]||{n:0,label:key};routes[key].n++})});
-  [["anaWhere",where,"Noch keine verlorenen Runs mit „Wo / gegen wen“ gespeichert."],["anaRoutes",routes,"Noch keine toten Links in gespeicherten Runs."]].forEach(function(x){
+  [["anaWhere",where,"Noch keine verlorenen Runs mit „Wo / gegen wen“ gespeichert."],["anaStop",stop,"Noch keine verlorenen Runs gespeichert."],["anaRoutes",routes,"Noch keine toten Links in gespeicherten Runs."]].forEach(function(x){
     var box=$(x[0]);box.textContent="";var top=topList(x[1],6);
     if(!top.length){box.appendChild(el("p",{class:"empty2",text:x[2]}));return}
     var max=top[0][1].n;top.forEach(function(t){box.appendChild(barRow(t[1].label,"x",t[1].n,max))})});
@@ -638,7 +659,7 @@ function startNewRun(){
   var r=S.meta.run,c={alive:0,dead:0};S.routes.forEach(function(x){var s=status(x);if(s in c)c[s]++});
   var dead=sorted().filter(function(e){return isLost(status(e[1]))}).map(function(e){var x=e[1],st=status(x),mi=IDX.filter(function(i){return cellOf(x,i).st==="miss"});
     return {route:x.name||"",nick:nickOf(x),mons:IDX.map(function(i){return cellOf(x,i).sp}),killer:st==="miss"?(mi.length?mi[0]:-1):(typeof x.killer==="number"?x.killer:-1),deaths:clone(x.deaths||{}),cause:lossCause(x,st)}});
-  var per={},tally={};for(var i=0;i<NP;i++){var lv=live(i);per[P[i]]=lv;tally[P[i]]={run:baseOf(i,"run")+lv.run,death:baseOf(i,"death")+lv.death,enc:baseOf(i,"enc")+lv.enc}}
+  var per={},tally={};for(var i=0;i<NP;i++){var lv=live(i);per[P[i]]={run:lv.run,death:lv.death,enc:lv.enc,miss:missLive(i)};tally[P[i]]={run:baseOf(i,"run")+lv.run,death:baseOf(i,"death")+lv.death,enc:baseOf(i,"enc")+lv.enc}}
   var nc=nextCap();
   var hist={no:+r.no||0,status:runState(),enders:clone(r.enders||{}),where:r.where||"",cause:r.cause||"",endedAt:new Date().toISOString(),badges:badgeCount(),lastCap:nc?nc.name:"alle",links:c.alive+c.dead,deadLinks:dead,perPlayer:per};
   if(S.meta.game)hist.game=S.meta.game;   // ohne gesetztes Spiel: Schwarz/Weiß (und alte Firestore-Regeln bleiben gültig)
@@ -750,6 +771,7 @@ function pickGame(g){
 var gameSel=$("gameSel");
 GAMES.list.forEach(function(g){gameSel.appendChild(el("option",{value:g.id,text:g.name+" ("+g.region+", Gen "+g.gen+")"}))});
 gameSel.addEventListener("change",function(){pickGame(gameSel.value)});
+$("anaGame").addEventListener("change",function(){ui.anaGame=this.value;renderAna()});
 function renderGame(){
   var g=GAME(),ng=S.meta.nextGame&&GAMES.byId[S.meta.nextGame]&&S.meta.nextGame!==gameId()?GAMES.byId[S.meta.nextGame]:null;
   document.title="Soul Link "+g.title;$("gameH").textContent=g.title;$("tagline").textContent=tt("tag");

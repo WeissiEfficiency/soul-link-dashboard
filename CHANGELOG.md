@@ -3,6 +3,7 @@
 ## 2026-11-26
 
 ### Hinzugefügt
+- Auswertung: Filter nach Spiel (erscheint, sobald Runs aus mehr als einem Spiel da sind), neuer Kasten „Verpasst gesamt“ pro Spieler und „Gestoppt vor“: an welchem Level-Cap die verlorenen Runs geendet haben. Gespeicherte Runs merken sich ab jetzt, wer wie oft nicht gefangen hat.
 - Team: Lebende Links lassen sich mit „☆ Ins Team“ markieren (höchstens sechs). Eine Leiste über den Routen zeigt das Team mit Sprites und Typen je Spieler und warnt, wenn ein Spieler zwei Team-Pokémon mit gleichem Primärtyp hat. Stirbt ein Link, fällt er aus dem Team; ein neuer Run leert es.
 - Routen zeigen neben dem eingetragenen Pokémon sein Sprite und seine Typen (passend zur Generation des Spiels).
 - Dupe-Hinweis: Fängt ein Spieler ein Pokémon, dessen Entwicklungsreihe er in einer früheren Route schon gefangen hat, steht „⚠ Dupe“ in der Zelle. Gesperrt wird nichts.

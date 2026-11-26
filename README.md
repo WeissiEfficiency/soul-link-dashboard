@@ -16,7 +16,7 @@ Dashboard für eine Pokémon-Soul-Link-Challenge in den **Pokémon-Hauptspielen 
 - Beim toten Link: wer den Encounter getötet hat, bei wem das Pokémon im Kampf gefallen ist (Death), Ursache
 - Run-Nummer und Gesamtstand Run, Death, Encounter pro Spieler (zählt automatisch, von Hand änderbar)
 - Level-Caps aller Arenaleiter (bzw. Inselkönige), Top Vier und Champ zum Abhaken
-- Gesamtliste, Friedhof, Auswertung mit Run-Verlauf
+- Gesamtliste, Friedhof, Auswertung mit Run-Verlauf, Filter nach Spiel, Verpasst pro Spieler und Level-Cap, an dem Runs enden
 - Backup als Text oder Datei, tägliches automatisches Backup per GitHub Action
 - Google-Anmeldung: Nur freigeschaltete Konten sehen und bearbeiten das Dashboard, alle anderen eine Willkommensseite
 - Design Pokédex für alle; der Admin kann zusätzlich Pastell oder Lovecraft wählen (gemerkt pro Gerät)
