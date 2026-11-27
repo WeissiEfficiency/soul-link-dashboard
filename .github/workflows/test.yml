@@ -1,0 +1,28 @@
+# Klicktest nach jeder Änderung an Seite, Design oder Logik.
+# Prüft die Syntax der JS-Dateien und klickt die wichtigsten Abläufe im Testmodus durch (nie Firebase).
+# Schlägt er fehl, schickt GitHub eine E-Mail; die Seite selbst ist dann schon veröffentlicht.
+name: Klicktest
+
+on:
+  push:
+    branches: [main]
+    paths: ["index.html", "css/**", "js/**", "config.js", "tests/**", "tools/test.py", ".github/workflows/test.yml"]
+  pull_request:
+    paths: ["index.html", "css/**", "js/**", "config.js", "tests/**", "tools/test.py", ".github/workflows/test.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax prüfen
+        run: for f in js/*.js config.js; do node --check "$f"; done
+
+      - name: Klicktest
+        run: python3 tools/test.py

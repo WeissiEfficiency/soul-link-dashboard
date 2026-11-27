@@ -3,7 +3,7 @@
 "use strict";
 /* Versionsschutz: passt index.html nicht zu dieser Datei (Browser-Cache nach einem Deploy), einmal neu laden.
    APP_V setzt tools/bump.py zusammen mit data-v und ?v= in index.html. */
-var APP_V="202611262343";
+var APP_V="202611270823";
 var HTML_V=document.documentElement.getAttribute("data-v");
 if(HTML_V&&HTML_V!==APP_V){try{var rk="soullink-reload-"+HTML_V+"-"+APP_V;if(!sessionStorage.getItem(rk)){sessionStorage.setItem(rk,"1");location.reload();return}}catch(e){}}
 /* Spieler: Anzahl aus config.js (playerCount, 2 bis 6, Standard 3). Schlüssel p0 … p5, Namen stehen in meta.players. */
@@ -28,6 +28,8 @@ function defMeta(){return {players:perPlayer(function(){return {name:""}}),
   caps:{beaten:{},lv:{}},backupAt:""}}
 var S={meta:defMeta(),routes:new Map(),history:[]};
 var store=null, mode="local", canWrite=true, loaded=false, routesLoaded=false;
+/* Testmodus (index.html?test=1, genutzt von tests/smoke.html): immer lokal mit eigenem Speicher, nie Firebase oder Artifact. */
+var TEST=/[?&]test=1(&|$)/.test(location.search);
 var auth=null, authUser=null, isAdmin=false, authKnown=false;   // nur im Firebase-Modus
 var pend=new Map(), busy=new Set(), metaPend=null, metaBusy=false, timers=new Map(), metaTimer=null;
 var ui={filter:"all",q:"",view:"edit",showAll:false,anaGame:"all"};
@@ -148,7 +150,7 @@ function makeFirebaseStore(fs){return {
   set:function(path,data){return fs.doc(path).set(data)},
   del:function(path){return fs.doc(path).delete()}}}
 function makeLocalStore(){
-  var KEY="soullink-bw-data",data={},subs=[];
+  var KEY=TEST?"soullink-test-data":"soullink-bw-data",data={},subs=[];
   try{data=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){data={}}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}subs.forEach(function(f){f()})}
   function col(path){return Object.keys(data).filter(function(k){var a=k.split("/");return a.length===2&&a[0]===path})}
@@ -1053,7 +1055,7 @@ var tm=null;
 (async function(){
   var CFG=window.SOULLINK_CONFIG||null;
   try{
-    if(CFG&&CFG.firebase&&CFG.firebase.projectId&&CFG.firebase.projectId.indexOf("DEIN")!==0){
+    if(!TEST&&CFG&&CFG.firebase&&CFG.firebase.projectId&&CFG.firebase.projectId.indexOf("DEIN")!==0){
       mode="firebase";LIVE_LABEL="Live synchronisiert";
       await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
       await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js");
@@ -1063,7 +1065,7 @@ var tm=null;
       setCanWrite(false);applyRole();renderAuth();setGate("load");   // bis die Anmeldung geklärt ist: Willkommensseite
       auth=firebase.auth();auth.onAuthStateChanged(onAuth);
       loadAutoBackup();
-    }else if(window.claude&&window.claude.use){
+    }else if(!TEST&&window.claude&&window.claude.use){
       mode="artifact";
       var user=await claude.use("user");
       if(user&&user.can){try{var w=await user.can("data.write");if(w===false)canWrite=false}catch(e){}}
@@ -1072,7 +1074,7 @@ var tm=null;
       if(!canWrite)document.body.classList.add("ro");
       store=makeArtifactStore(db);
     }else{
-      mode="local";LIVE_LABEL="Nur auf diesem Gerät gespeichert";store=makeLocalStore();$("bkDl").hidden=false;
+      mode="local";LIVE_LABEL=TEST?"Testmodus":"Nur auf diesem Gerät gespeichert";store=makeLocalStore();$("bkDl").hidden=false;
     }
   }catch(e){mode="local";LIVE_LABEL="Online-Speicher nicht erreichbar, nur lokal";store=makeLocalStore();$("bkDl").hidden=false;setCanWrite(true);applyRole();renderAuth()}
   if(mode!=="firebase"){applyThemeRole();setGate("");subscribe()}   // lokal/Artifact: keine Anmeldung; Firebase abonniert erst in onAuth()

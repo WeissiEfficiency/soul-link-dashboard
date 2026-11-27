@@ -8,6 +8,7 @@ Soul-Link-Dashboard für alle Pokémon-Hauptspiele (Gen 1 bis 9, deutsch, Standa
 
 - Lokal starten: `python3 -m http.server 8000`, dann http://localhost:8000
 - Syntax prüfen: `node --check js/app.js && node --check js/games.js && node --check js/pokemon.js && node --check js/types.js && node --check js/evo.js`
+- Klicktest (vor jedem Commit mit Änderungen an `index.html`, `css/` oder `js/`): `python tools/test.py` (braucht Chrome, Edge oder Brave; läuft auch als GitHub Action)
 - Version setzen (vor jedem Commit mit Änderungen an `index.html`, `css/` oder `js/`): `python tools/bump.py`
 - Deploy: Push auf `main`, GitHub Pages veröffentlicht automatisch.
 
@@ -25,6 +26,7 @@ Soul-Link-Dashboard für alle Pokémon-Hauptspiele (Gen 1 bis 9, deutsch, Standa
 - `firestore.rules`: daraus erzeugt, wird in der Firebase-Konsole eingefügt (nicht automatisch)
 - `tools/setup.py`: Einrichtung für eine Gruppe (config.js, firestore.rules, Admin-UID, Spieleranzahl, Backups leeren)
 - `tools/bump.py`: neue Versionsnummer in `index.html` (`data-v`, `?v=`) und `js/app.js` (`APP_V`), gegen gemischte Browser-Caches
+- `tests/smoke.html` + `tools/test.py` + `.github/workflows/test.yml`: Klicktest im Testmodus (`index.html?test=1`, nur lokaler Speicher). Neue Abläufe dort mit abdecken
 - `tools/backup.py` + `.github/workflows/backup.yml`: tägliches Auto-Backup nach `backups/` (nicht von Hand bearbeiten)
 
 ## Konventionen

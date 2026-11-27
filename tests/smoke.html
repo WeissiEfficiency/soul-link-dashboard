@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Klicktest</title>
+<style>
+body{font:14px/1.5 system-ui,sans-serif;margin:16px;background:#fff;color:#111}
+#result{font-weight:700;font-size:18px;margin-bottom:8px}
+#result[data-status=pass]{color:#16803c}#result[data-status=fail]{color:#c62828}
+pre{white-space:pre-wrap;margin:0 0 12px}
+iframe{width:100%;height:70vh;border:1px solid #999}
+</style>
+</head>
+<body>
+<!-- Klicktest: lädt die Seite im Testmodus (index.html?test=1, nur lokaler Speicher, nie Firebase)
+     und klickt die wichtigsten Abläufe durch. Aufruf: python tools/test.py oder diese Seite im Browser öffnen. -->
+<div id="result" data-status="running">Läuft …</div>
+<pre id="log"></pre>
+<iframe id="app" title="Dashboard im Testmodus"></iframe>
+<script>
+(function(){
+"use strict";
+var logEl=document.getElementById("log"),resEl=document.getElementById("result"),frame=document.getElementById("app");
+var fails=0,step="";
+function log(t){logEl.textContent+=t+"\n"}
+function ok(cond,msg){if(cond)log("ok    "+step+": "+msg);else{fails++;log("FEHLER "+step+": "+msg)}}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function waitFor(fn,ms){var end=Date.now()+(ms||5000);while(Date.now()<end){try{var v=fn();if(v)return v}catch(e){}await sleep(50)}return null}
+var D,W;
+function $(sel){return D.querySelector(sel)}
+function $$(sel){return Array.prototype.slice.call(D.querySelectorAll(sel))}
+function row(id){return $('article.row[data-id="'+id+'"]')}
+function cell(id,i){return $('article.row[data-id="'+id+'"] .cell[data-p="'+i+'"]')}
+function txt(sel){var e=$(sel);return e?e.textContent:""}
+function type(inp,v){inp.value=v;inp.dispatchEvent(new W.Event("input",{bubbles:true}));inp.dispatchEvent(new W.Event("change",{bubbles:true}))}
+async function setCell(id,i,name,st){var c=cell(id,i);if(name)type(c.querySelector(".sp"),name);await sleep(60);
+  /* Ein eingetragener Name setzt „lebt“ schon selbst; ein Klick auf den gleichen Zustand würde ihn wieder löschen. */
+  var c2=cell(id,i);if(st&&c2.getAttribute("data-v")!==st)c2.querySelector('[data-act=st][data-v="'+st+'"]').click();await sleep(60)}
+var MONS=["Ottaro","Floink","Serpifeu","Pikachu","Evoli","Glurak"];
+
+async function run(){
+  try{localStorage.removeItem("soullink-test-data")}catch(e){}
+  frame.src="../index.html?test=1";
+  await new Promise(function(r){frame.onload=r});
+  W=frame.contentWindow;D=frame.contentDocument;
+
+  step="Start";
+  ok(!!await waitFor(function(){return !$("#seedBtn").hidden}),"leerer Run zeigt „Standard-Routen anlegen“");
+  ok(/Testmodus/.test(txt("body")),"Testmodus aktiv (kein Firebase)");
+  $("#seedBtn").click();
+  ok(!!await waitFor(function(){return row("r01")}),"Standard-Routen angelegt");
+  var np=$$('article.row[data-id="r01"] .cell').length;
+  ok(np>=2&&np<=6,np+" Spieler");
+
+  step="Fangen";
+  for(var i=0;i<np;i++)await setCell("r01",i,MONS[i],"alive");
+  ok(await waitFor(function(){return row("r01").getAttribute("data-st")==="alive"}),"Route 1 lebt");
+  ok(!cell("r01",0).querySelector(".spi").hidden,"Sprite neben dem Pokémon");
+  ok(!!cell("r01",0).querySelector(".tyl .ty"),"Typ neben dem Pokémon");
+  ok(!!await waitFor(function(){return row("r02")}),"nächste Route erscheint");
+
+  step="Team";
+  var tb=row("r01").querySelector(".teamb");
+  ok(!tb.hidden,"Knopf „Ins Team“ sichtbar");
+  tb.click();
+  ok(await waitFor(function(){return /^1 von 6/.test(txt("#teamNote"))}),"Team zählt 1 von 6");
+  ok($$("#team .tm").length===1,"Team-Leiste zeigt den Link");
+
+  step="Dupe";
+  await setCell("r02",0,"Zwottronin","alive");
+  ok(!!await waitFor(function(){return cell("r02",0).querySelector(".dupe")}),"Dupe-Hinweis bei gleicher Entwicklungsreihe");
+
+  step="Tod";
+  for(var j=1;j<np;j++)await setCell("r02",j,MONS[j],"alive");
+  await setCell("r02",1,"","dead");
+  ok(await waitFor(function(){return row("r02").getAttribute("data-st")==="dead"}),"Route 2 tot");
+  ok(await waitFor(function(){return $$('article.row[data-id="r02"] .cell[data-v=alive]').length===0}),"verbundene Pokémon sterben mit");
+  ok(await waitFor(function(){return $$("#grave tr").length===1}),"Friedhof zeigt den Link");
+
+  step="Verpasst";
+  await waitFor(function(){return row("r03")});
+  await setCell("r03",0,"","miss");
+  ok(await waitFor(function(){return row("r03").getAttribute("data-st")==="miss"}),"Route 3 verpasst");
+  ok(await waitFor(function(){return $$("#grave tr").length===2}),"verpasster Link steht im Friedhof");
+
+  step="Team-Tod";
+  await setCell("r01",0,"","dead");
+  ok(await waitFor(function(){return /^0 von 6/.test(txt("#teamNote"))}),"toter Link fällt aus dem Team");
+
+  step="Schwächen";
+  var wb=$("#wkTypes button");if(wb)wb.click();
+  ok(!!await waitFor(function(){return txt("#wkOut").length>20}),"Schwächen-Karte zeigt Ergebnis");
+  if(wb)wb.click();
+
+  step="Neuer Run";
+  $("#runLost").click();
+  ok(await waitFor(function(){return !$("#newRun").hidden}),"„Neuer Run starten“ erscheint nach „Run verloren“");
+  $("#newRun").click();await sleep(50);$("#newRun").click();
+  ok(await waitFor(function(){return /Verloren/.test(txt("#histBody"))}),"Run steht in der Auswertung");
+  ok(await waitFor(function(){return /Verpasst gesamt: 1/.test(txt("#anaTotals"))}),"Auswertung zählt 1× verpasst");
+  ok(await waitFor(function(){return $$("article.row").every(function(r){return r.getAttribute("data-st")==="open"})},4000),"Routen sind geleert");
+  ok($$("#grave tr").length<=1&&!/Route/.test(txt("#grave")),"Friedhof ist leer");
+}
+
+run().catch(function(e){fails++;log("FEHLER "+step+": "+(e&&e.stack||e))}).then(function(){
+  try{localStorage.removeItem("soullink-test-data")}catch(e){}
+  resEl.setAttribute("data-status",fails?"fail":"pass");
+  resEl.textContent=fails?fails+" Fehler":"Alles bestanden";
+  document.title=fails?"FAIL":"PASS";
+  /* tools/test.py ruft die Seite mit ?report=1 auf und wartet auf dieses Ergebnis. */
+  if(/[?&]report=1/.test(location.search))
+    fetch("/__result",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({status:fails?"fail":"pass",log:logEl.textContent})}).catch(function(){});
+});
+})();
+</script>
+</body>
+</html>

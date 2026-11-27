@@ -121,6 +121,10 @@ Angezeigter Gesamtstand = `tally` (Basis) + Live-Werte des aktuellen Runs:
 
 Manuelles Ändern schreibt `tally = gewünschter Wert − Live-Wert`. „Neuer Run starten“ addiert die Live-Werte in `tally`, legt `history` an und leert Routen und Caps.
 
+## Klicktest
+
+`tests/smoke.html` lädt `index.html?test=1` in einem iframe. Mit `?test=1` setzt `app.js` `TEST`: immer Lokal-Modus mit eigenem Speicherschlüssel `soullink-test-data`, nie Firebase oder Artifact, die echten Daten bleiben unberührt (auch auf GitHub Pages). Die Testseite legt die Standard-Routen an und prüft Fangen (Sprite, Typ), Team, Dupe, Tod, Verpasst, Schwächen-Karte, „Run verloren“ und „Neuer Run“ samt Auswertung. `tools/test.py` startet einen lokalen Server und einen Browser ohne Fenster (Chrome, Chromium, Edge oder Brave, sonst Umgebungsvariable `CHROME`), öffnet die Testseite mit `?report=1`; die Seite schickt ihr Ergebnis per POST an `/__result`. `.github/workflows/test.yml` führt Syntax-Prüfung und Klicktest bei jedem Push auf `main` mit Änderungen an Seite, Design oder Logik aus.
+
 ## Versionen und Browser-Cache
 
 GitHub Pages schickt `Cache-Control: max-age=600`. Damit ein Browser nach einem Deploy keine neue `index.html` mit einer alten `js/app.js` kombiniert, tragen CSS und Skripte in `index.html` `?v=<Version>`, `<html>` trägt `data-v`, und `js/app.js` hat `APP_V`. Weichen `data-v` und `APP_V` ab, lädt `app.js` die Seite einmal neu (Merker in `sessionStorage`). Alle drei Stellen setzt `python tools/bump.py`. Fehlt `data-v` (z. B. als Artifact), passiert nichts.

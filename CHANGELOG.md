@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-27
+
+### Hinzugefügt
+- Klicktest: `python tools/test.py` klickt Fangen, Team, Dupe, Tod, Verpasst, Schwächen-Karte und „Neuer Run“ in einem Browser ohne Fenster durch, auch als GitHub Action nach jedem Push. Die Seite läuft dafür im Testmodus (`index.html?test=1`) mit eigenem Speicher, nie gegen Firebase.
+
 ## 2026-11-26
 
 ### Hinzugefügt

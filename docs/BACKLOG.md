@@ -15,7 +15,7 @@ Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus
 | T-003 | Backup aus claude.ai kopieren und auf der GitHub-Seite einspielen | hoch | erledigt | M1 |
 | T-004 | Link an die Mitspieler schicken, gemeinsam testen | mittel | offen | M1 |
 | T-005 | Dupe-Hinweis, wenn eine Art im Run schon gefangen wurde (falls ihr die Regel spielt) | niedrig | erledigt (pro Spieler, ganze Entwicklungsreihe) | M2 |
-| T-006 | Automatischer Smoke-Test (Playwright) für Eintragen, Tod, Neuer Run | niedrig | Idee | M2 |
+| T-006 | Automatischer Klicktest für Eintragen, Tod, Verpasst, Team, Neuer Run | niedrig | erledigt (`python tools/test.py`, GitHub Action, ohne npm) | M2 |
 | T-007 | Regelmäßiges Backup erinnern (z. B. Hinweis, wenn letzte Sicherung alt ist) | niedrig | erledigt | M2 |
 | T-008 | Firebase App Check (reCAPTCHA), damit nur die eigene Seite schreiben darf | niedrig | verworfen (durch Anmeldung erledigt) | M2 |
 | T-010 | Automatisches tägliches Backup per GitHub Action nach `backups/` | mittel | erledigt | M2 |
