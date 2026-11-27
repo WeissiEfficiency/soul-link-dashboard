@@ -45,8 +45,15 @@ section{margin-top:26px}
 .card{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);box-shadow:var(--sh)}
 .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
 .sec-h h2{font-size:28px;font-weight:700}
-.sec-h h2::before{content:var(--mark);color:var(--markc);margin-right:8px;-webkit-text-stroke:1.5px var(--ink)}
+.sec-h h2::before{content:var(--mark);color:var(--markc);margin-right:8px;-webkit-text-stroke:1.5px var(--ink);display:inline-block}
 .sec-h small{color:var(--mute);font-weight:700}
+/* Ein- und ausklappen: Klick auf die Überschrift (js/app.js, „Bereiche ein- und ausklappen“) */
+.sec-h h2{cursor:pointer}
+.fold{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;letter-spacing:inherit;text-align:left;cursor:pointer;border-radius:6px}
+.fold:focus-visible{outline:3px solid var(--markc);outline-offset:4px}
+section.folded>:not(.sec-h){display:none!important}
+section.folded .sec-h{margin-bottom:0}
+section.folded .sec-h h2::before{transform:rotate(-90deg);opacity:.6}
 
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}
 label,.lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:800}
@@ -348,7 +355,7 @@ body.ro #q,body.ro #wkQ,body.ro #wkClear,body.ro #wkTypes button,body.ro #filter
   .foot{grid-template-columns:1fr}
 }
 @media (max-width:480px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (prefers-reduced-motion:no-preference){.btn,.seg button,.chipb{transition:background .15s,transform .1s}.bar .fl{transition:width .3s}}
+@media (prefers-reduced-motion:no-preference){.sec-h h2::before{transition:transform .15s,opacity .15s}.btn,.seg button,.chipb{transition:background .15s,transform .1s}.bar .fl{transition:width .3s}}
 
 /* =====================================================================
    Themes: gleiche Bausteine, andere Tokens. Umschalten über <html data-theme="…">
@@ -382,7 +389,8 @@ body.ro #q,body.ro #wkQ,body.ro #wkClear,body.ro #wkTypes button,body.ro #filter
 /* Karten als Textbox: dunkler Rand, innen eine weiße und eine graue Linie */
 [data-theme="pokedex"] .card,[data-theme="pokedex"] .row{border-width:4px;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px var(--line),4px 4px 0 var(--ink)}
 [data-theme="pokedex"] .sec-h h2{letter-spacing:.02em}
-[data-theme="pokedex"] .sec-h h2::before{-webkit-text-stroke:0;font-size:20px;vertical-align:3px}
+[data-theme="pokedex"] .sec-h h2::before{-webkit-text-stroke:0;font-size:20px;vertical-align:3px;transform:rotate(90deg)}
+[data-theme="pokedex"] section.folded .sec-h h2::before{transform:none}
 [data-theme="pokedex"] .run .l{background:var(--tint)}
 [data-theme="pokedex"] .capnow{background:#d8f0c8}
 [data-theme="pokedex"] .kpi:nth-child(1){background:var(--sky);color:#fff}

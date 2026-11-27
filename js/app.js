@@ -3,7 +3,7 @@
 "use strict";
 /* Versionsschutz: passt index.html nicht zu dieser Datei (Browser-Cache nach einem Deploy), einmal neu laden.
    APP_V setzt tools/bump.py zusammen mit data-v und ?v= in index.html. */
-var APP_V="202611271104";
+var APP_V="202611271715";
 var HTML_V=document.documentElement.getAttribute("data-v");
 if(HTML_V&&HTML_V!==APP_V){try{var rk="soullink-reload-"+HTML_V+"-"+APP_V;if(!sessionStorage.getItem(rk)){sessionStorage.setItem(rk,"1");location.reload();return}}catch(e){}}
 /* Spieler: Anzahl aus config.js (playerCount, 2 bis 6, Standard 3). Schlüssel p0 … p5, Namen stehen in meta.players. */
@@ -1015,6 +1015,30 @@ $("accSave").addEventListener("click",function(){
   firebase.firestore().doc("access/main").set({emails:list})   // eigenes Dokument, nicht Teil von meta/routes
     .then(function(){s.textContent="Gespeichert ✧ ("+list.length+" freigeschaltet)"},function(){s.textContent="Speichern fehlgeschlagen";s.classList.add("err")});
 });
+
+/* ---------- Bereiche ein- und ausklappen ----------
+   Klick auf eine Überschrift (Run, Level-Caps, …) klappt den Bereich zu. Die Wahl liegt pro Gerät in localStorage,
+   nicht in der Datenbank, jeder klappt also für sich. Zugeklappt bleibt nur die Kopfzeile mit ihrem Hinweis sichtbar. */
+var FOLD_KEY=TEST?"soullink-test-folded":"soullink-folded";
+function foldedIds(){try{var a=JSON.parse(localStorage.getItem(FOLD_KEY)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
+function setFolded(sec,h,on,save){
+  sec.classList.toggle("folded",on);h.querySelector(".fold").setAttribute("aria-expanded",String(!on));
+  if(!save)return;
+  var a=foldedIds().filter(function(x){return x!==h.id});if(on)a.push(h.id);
+  try{localStorage.setItem(FOLD_KEY,JSON.stringify(a))}catch(e){}
+}
+(function(){
+  var folded=foldedIds();
+  document.querySelectorAll("main > section > .sec-h > h2[id]").forEach(function(h){
+    var sec=h.parentNode.parentNode,b=document.createElement("button");
+    b.type="button";b.className="fold";b.title="Ein- oder ausklappen";
+    while(h.firstChild)b.appendChild(h.firstChild);
+    h.appendChild(b);
+    /* Klick auf die ganze Überschrift, also auch auf das Zeichen davor; der Knopf darin ist für die Tastatur. */
+    h.addEventListener("click",function(){setFolded(sec,h,!sec.classList.contains("folded"),true)});
+    setFolded(sec,h,folded.indexOf(h.id)>=0,false);
+  });
+})();
 
 /* ---------- Theme-Umschalter (nur Admin) ---------- */
 function themeChoiceAllowed(){return mode==="firebase"?(authKnown&&isAdmin):true}

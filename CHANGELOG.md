@@ -3,6 +3,7 @@
 ## 2026-11-27
 
 ### Hinzugefügt
+- Bereiche ein- und ausklappen: Klick auf eine Überschrift (Run, Level-Caps, Schwächen, Überblick, Spieler, Team, Routen, Friedhof, Auswertung) klappt den Bereich zu, die Kopfzeile bleibt stehen. Jedes Gerät merkt sich das für sich.
 - Sonne/Mond und Ultrasonne/Ultramond: Die Totem-Prüfungen stehen jetzt als Level-Caps zwischen den Inselkönigen. Schwert/Schild: Champ-Cup-Finale (Level 55) vor Delion.
 - Daten nicht öffentlich (optional, `python tools/setup.py --private on`): Firestore lässt nur noch Admin und Freigeschaltete lesen. Das tägliche Backup läuft dann in einem privaten Repo (`tools/private-backup.yml`) mit einem Firebase-Dienstkonto und meldet sich über `meta.autoBackupAt` bei der Backup-Erinnerung. Anleitung in `docs/INSTALLATION.md`.
 - Klicktest: `python tools/test.py` klickt Fangen, Team, Dupe, Tod, Verpasst, Schwächen-Karte und „Neuer Run“ in einem Browser ohne Fenster durch, auch als GitHub Action nach jedem Push. Die Seite läuft dafür im Testmodus (`index.html?test=1`) mit eigenem Speicher, nie gegen Firebase.

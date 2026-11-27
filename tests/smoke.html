@@ -40,7 +40,7 @@ async function setCell(id,i,name,st){var c=cell(id,i);if(name)type(c.querySelect
 var MONS=["Ottaro","Floink","Serpifeu","Pikachu","Evoli","Glurak"];
 
 async function run(){
-  try{localStorage.removeItem("soullink-test-data")}catch(e){}
+  try{localStorage.removeItem("soullink-test-data");localStorage.removeItem("soullink-test-folded")}catch(e){}
   frame.src="../index.html?test=1";
   await new Promise(function(r){frame.onload=r});
   W=frame.contentWindow;D=frame.contentDocument;
@@ -101,10 +101,19 @@ async function run(){
   ok(await waitFor(function(){return /Verpasst gesamt: 1/.test(txt("#anaTotals"))}),"Auswertung zählt 1× verpasst");
   ok(await waitFor(function(){return $$("article.row").every(function(r){return r.getAttribute("data-st")==="open"})},4000),"Routen sind geleert");
   ok($$("#grave tr").length<=1&&!/Route/.test(txt("#grave")),"Friedhof ist leer");
+
+  step="Einklappen";
+  var sec=$("#h-run").closest("section");
+  $("#h-run").click();
+  ok(sec.classList.contains("folded")&&$(".card.run").offsetParent===null,"Klick auf „Run“ klappt den Bereich zu");
+  ok($("#h-run .fold").getAttribute("aria-expanded")==="false","Knopf meldet zugeklappt");
+  ok(/h-run/.test(localStorage.getItem("soullink-test-folded")||""),"Wahl wird auf dem Gerät gemerkt");
+  $("#h-run .fold").click();
+  ok(!sec.classList.contains("folded")&&$(".card.run").offsetParent!==null,"zweiter Klick klappt wieder auf");
 }
 
 run().catch(function(e){fails++;log("FEHLER "+step+": "+(e&&e.stack||e))}).then(function(){
-  try{localStorage.removeItem("soullink-test-data")}catch(e){}
+  try{localStorage.removeItem("soullink-test-data");localStorage.removeItem("soullink-test-folded")}catch(e){}
   resEl.setAttribute("data-status",fails?"fail":"pass");
   resEl.textContent=fails?fails+" Fehler":"Alles bestanden";
   document.title=fails?"FAIL":"PASS";
