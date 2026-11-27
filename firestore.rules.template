@@ -5,7 +5,8 @@ rules_version = '2';
 // mit der Admin-UID aus config.js. Die fertige Datei dann in der Firebase-Konsole einfügen:
 // Firestore > Regeln > alles ersetzen > Veröffentlichen.
 //
-// Lesen darf jeder mit dem Link. Schreiben darf nur, wer mit Google angemeldet ist und
+// Lesen darf jeder mit dem Link, bei privateRead: true in config.js (Daten nicht öffentlich) nur, wer
+// auch schreiben darf. Schreiben darf nur, wer mit Google angemeldet ist und
 // entweder Admin ist (UID unten, gleiche UID in config.js) oder dessen E-Mail in access/main steht.
 // access/main pflegt der Admin im Dashboard unter „Schreibrechte“.
 // Außerdem nur Daten in der Form des Dashboards: bekannte Felder, begrenzte Textlängen, keine fremden
