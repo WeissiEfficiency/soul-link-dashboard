@@ -3,7 +3,7 @@
 "use strict";
 /* Versionsschutz: passt index.html nicht zu dieser Datei (Browser-Cache nach einem Deploy), einmal neu laden.
    APP_V setzt tools/bump.py zusammen mit data-v und ?v= in index.html. */
-var APP_V="202611271715";
+var APP_V="202611271718";
 var HTML_V=document.documentElement.getAttribute("data-v");
 if(HTML_V&&HTML_V!==APP_V){try{var rk="soullink-reload-"+HTML_V+"-"+APP_V;if(!sessionStorage.getItem(rk)){sessionStorage.setItem(rk,"1");location.reload();return}}catch(e){}}
 /* Spieler: Anzahl aus config.js (playerCount, 2 bis 6, Standard 3). Schlüssel p0 … p5, Namen stehen in meta.players. */
@@ -1038,6 +1038,71 @@ function setFolded(sec,h,on,save){
     h.addEventListener("click",function(){setFolded(sec,h,!sec.classList.contains("folded"),true)});
     setFolded(sec,h,folded.indexOf(h.id)>=0,false);
   });
+})();
+
+/* ---------- Bereiche verschieben ----------
+   Griff ⠿ rechts in der Kopfzeile ziehen (Maus oder Finger) oder anklicken und Pfeil hoch/runter drücken.
+   Reihenfolge pro Gerät in localStorage (Liste der Überschrift-IDs), wie das Einklappen. */
+var ORDER_KEY=TEST?"soullink-test-order":"soullink-order";
+var SORT=Array.prototype.slice.call(document.querySelectorAll("main > section > .sec-h > h2[id]")).map(function(h){return h.parentNode.parentNode});
+var SORT_DEF=SORT.map(function(s){return s.querySelector(".sec-h > h2").id});
+var sortAnchor=SORT[SORT.length-1].nextElementSibling;   // alles bleibt als Block vor „Schreibrechte“
+function secId(s){return s.querySelector(".sec-h > h2").id}
+function curOrder(){return Array.prototype.slice.call(document.querySelectorAll("main > section")).filter(function(s){return SORT.indexOf(s)>=0}).map(secId)}
+function applyOrder(ids){
+  var list=ids.filter(function(id){return SORT_DEF.indexOf(id)>=0});
+  SORT_DEF.forEach(function(id,i){if(list.indexOf(id)<0)list.splice(Math.min(i,list.length),0,id)});   // neue Bereiche an ihren Standardplatz
+  list.forEach(function(id){sortAnchor.parentNode.insertBefore($(id).parentNode.parentNode,sortAnchor)});
+  $("orderReset").hidden=list.join()===SORT_DEF.join();
+}
+function saveOrder(){
+  var ids=curOrder();$("orderReset").hidden=ids.join()===SORT_DEF.join();
+  try{if($("orderReset").hidden)localStorage.removeItem(ORDER_KEY);else localStorage.setItem(ORDER_KEY,JSON.stringify(ids))}catch(e){}
+}
+(function(){
+  var drag=null;   // {sec, grip, y}
+  function moveTo(y){
+    var others=SORT.filter(function(s){return s!==drag.sec}),before=null;
+    for(var i=0;i<others.length;i++){var r=others[i].getBoundingClientRect();if(y<r.top+r.height/2){before=others[i];break}}
+    var ref=before||sortAnchor;
+    if(drag.sec.nextElementSibling!==ref)ref.parentNode.insertBefore(drag.sec,ref);
+  }
+  function tick(){   // am Rand mitscrollen, solange gezogen wird
+    if(!drag)return;
+    var e=28,v=drag.y<e*2?-e/2:drag.y>innerHeight-e*2?e/2:0;
+    if(v){scrollBy(0,v);moveTo(drag.y)}
+    requestAnimationFrame(tick);
+  }
+  /* Am Fenster lauschen, nicht am Griff: Beim Umhängen des Bereichs im DOM geht ein Pointer-Capture verloren. */
+  function onMove(e){if(drag){drag.y=e.clientY;moveTo(e.clientY)}}
+  function end(){
+    if(!drag)return;drag.sec.classList.remove("dragging");drag=null;document.body.classList.remove("sorting");
+    removeEventListener("pointermove",onMove);removeEventListener("pointerup",end);removeEventListener("pointercancel",end);
+    saveOrder();
+  }
+  SORT.forEach(function(sec){
+    var g=document.createElement("button");
+    g.type="button";g.className="grip";g.textContent="⠿";
+    g.title="Ziehen zum Verschieben (oder anklicken und Pfeil hoch/runter)";
+    g.setAttribute("aria-label",sec.querySelector(".sec-h > h2").textContent+" verschieben");
+    sec.querySelector(".sec-h").appendChild(g);
+    g.addEventListener("pointerdown",function(e){
+      if(e.button||drag)return;e.preventDefault();
+      drag={sec:sec,y:e.clientY};sec.classList.add("dragging");document.body.classList.add("sorting");
+      addEventListener("pointermove",onMove);addEventListener("pointerup",end);addEventListener("pointercancel",end);
+      requestAnimationFrame(tick);
+    });
+    g.addEventListener("keydown",function(e){
+      var ord=curOrder(),k=ord.indexOf(secId(sec));
+      if(e.key==="ArrowUp"&&k>0){ord.splice(k,1);ord.splice(k-1,0,secId(sec))}
+      else if(e.key==="ArrowDown"&&k<ord.length-1){ord.splice(k,1);ord.splice(k+1,0,secId(sec))}
+      else return;
+      e.preventDefault();applyOrder(ord);saveOrder();g.focus();g.scrollIntoView({block:"nearest"});
+    });
+  });
+  $("orderReset").addEventListener("click",function(){applyOrder(SORT_DEF);saveOrder()});
+  var saved=[];try{saved=JSON.parse(localStorage.getItem(ORDER_KEY)||"[]")}catch(e){}
+  applyOrder(Array.isArray(saved)?saved:[]);
 })();
 
 /* ---------- Theme-Umschalter (nur Admin) ---------- */

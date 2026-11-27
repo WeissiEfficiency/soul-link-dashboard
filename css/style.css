@@ -54,6 +54,17 @@ section{margin-top:26px}
 section.folded>:not(.sec-h){display:none!important}
 section.folded .sec-h{margin-bottom:0}
 section.folded .sec-h h2::before{transform:rotate(-90deg);opacity:.6}
+/* Verschieben: Griff rechts in der Kopfzeile (js/app.js, „Bereiche verschieben“) */
+.sec-h{justify-content:flex-start}
+.sec-h>h2{margin-right:0}
+.sec-h>:not(h2):not(.grip){order:2;margin-left:auto}
+.sec-h>.grip{order:1}
+.grip{align-self:center;background:none;border:2px solid transparent;border-radius:8px;padding:0 6px;font:700 22px/1.2 var(--display);color:var(--mute);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.grip:hover{border-color:var(--line);color:var(--ink)}
+.grip:focus-visible{outline:3px solid var(--markc);outline-offset:2px}
+body.sorting,body.sorting *{cursor:grabbing!important;user-select:none;-webkit-user-select:none}
+section.dragging{outline:3px dashed var(--markc);outline-offset:6px;border-radius:var(--r)}
+.ordrst{margin-top:26px;text-align:center}
 
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}
 label,.lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:800}
@@ -328,7 +339,7 @@ body.ro #gate .btn{pointer-events:auto;opacity:1}
 footer{margin:30px 0 44px;color:var(--mute);font-size:13.5px;font-weight:700}
 body.ro input,body.ro select,body.ro .seg button,body.ro .btn,body.ro .chipb,body.ro .tick,body.ro .stp{pointer-events:none;opacity:.7}
 /* Lesen, Filtern, Suchen und Anmelden bleiben auch ohne Schreibrecht bedienbar */
-body.ro #q,body.ro #wkQ,body.ro #wkClear,body.ro #wkTypes button,body.ro #filter button,body.ro #viewSeg button,body.ro #themeSeg button,body.ro .btn.authbtn,body.ro #copyBtn,body.ro #moreBtn{pointer-events:auto;opacity:1}
+body.ro #orderReset,body.ro #q,body.ro #wkQ,body.ro #wkClear,body.ro #wkTypes button,body.ro #filter button,body.ro #viewSeg button,body.ro #themeSeg button,body.ro .btn.authbtn,body.ro #copyBtn,body.ro #moreBtn{pointer-events:auto;opacity:1}
 
 /* Anmeldung */
 .topr{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
@@ -443,6 +454,7 @@ body.ro #q,body.ro #wkQ,body.ro #wkClear,body.ro #wkTypes button,body.ro #filter
 [data-theme="lovecraft"] .sec-h h2::before{-webkit-text-stroke:0;margin-right:10px}
 [data-theme="lovecraft"] .sec-h small,[data-theme="lovecraft"] footer,[data-theme="lovecraft"] #copyNote{color:#9fb3a8}
 [data-theme="lovecraft"] footer{font-style:italic}
+[data-theme="lovecraft"] .grip{color:#9fb3a8}[data-theme="lovecraft"] .grip:hover{color:#e9dfc2}
 /* Pergament-Karten mit Altersflecken */
 [data-theme="lovecraft"] .card,[data-theme="lovecraft"] .row{border-width:1px;background-image:radial-gradient(ellipse at 12% 18%,rgba(120,86,40,.10),transparent 40%),radial-gradient(ellipse at 88% 85%,rgba(120,86,40,.12),transparent 45%)}
 [data-theme="lovecraft"] .row::before{width:6px;border-right-width:1px}

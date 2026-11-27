@@ -40,7 +40,7 @@ async function setCell(id,i,name,st){var c=cell(id,i);if(name)type(c.querySelect
 var MONS=["Ottaro","Floink","Serpifeu","Pikachu","Evoli","Glurak"];
 
 async function run(){
-  try{localStorage.removeItem("soullink-test-data");localStorage.removeItem("soullink-test-folded")}catch(e){}
+  try{localStorage.removeItem("soullink-test-data");localStorage.removeItem("soullink-test-folded");localStorage.removeItem("soullink-test-order")}catch(e){}
   frame.src="../index.html?test=1";
   await new Promise(function(r){frame.onload=r});
   W=frame.contentWindow;D=frame.contentDocument;
@@ -110,10 +110,25 @@ async function run(){
   ok(/h-run/.test(localStorage.getItem("soullink-test-folded")||""),"Wahl wird auf dem Gerät gemerkt");
   $("#h-run .fold").click();
   ok(!sec.classList.contains("folded")&&$(".card.run").offsetParent!==null,"zweiter Klick klappt wieder auf");
+
+  step="Verschieben";
+  function order(){return $$("main > section .sec-h > h2[id]").map(function(h){return h.id})}
+  var before=order(),k=before.indexOf("h-wk");
+  ok($$(".sec-h .grip").length===before.length,"jeder Bereich hat einen Griff");
+  ok($("#orderReset").hidden,"„Standard-Reihenfolge“ ist versteckt, solange nichts verschoben ist");
+  var g=$("#h-wk").closest("section").querySelector(".grip");
+  g.dispatchEvent(new W.KeyboardEvent("keydown",{key:"ArrowDown",bubbles:true}));
+  g.dispatchEvent(new W.KeyboardEvent("keydown",{key:"ArrowDown",bubbles:true}));
+  var after=order();
+  ok(after.indexOf("h-wk")===k+2,"Schwächen mit Pfeil runter zwei Plätze nach unten");
+  ok(/h-wk/.test(localStorage.getItem("soullink-test-order")||""),"Reihenfolge wird auf dem Gerät gemerkt");
+  ok(!$("#orderReset").hidden,"„Standard-Reihenfolge“ erscheint");
+  $("#orderReset").click();
+  ok(order().join()===before.join()&&$("#orderReset").hidden,"zurück zur Standard-Reihenfolge");
 }
 
 run().catch(function(e){fails++;log("FEHLER "+step+": "+(e&&e.stack||e))}).then(function(){
-  try{localStorage.removeItem("soullink-test-data");localStorage.removeItem("soullink-test-folded")}catch(e){}
+  try{localStorage.removeItem("soullink-test-data");localStorage.removeItem("soullink-test-folded");localStorage.removeItem("soullink-test-order")}catch(e){}
   resEl.setAttribute("data-status",fails?"fail":"pass");
   resEl.textContent=fails?fails+" Fehler":"Alles bestanden";
   document.title=fails?"FAIL":"PASS";
