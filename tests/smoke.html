@@ -123,6 +123,15 @@ async function run(){
   ok(after.indexOf("h-wk")===k+2,"Schwächen mit Pfeil runter zwei Plätze nach unten");
   ok(/h-wk/.test(localStorage.getItem("soullink-test-order")||""),"Reihenfolge wird auf dem Gerät gemerkt");
   ok(!$("#orderReset").hidden,"„Standard-Reihenfolge“ erscheint");
+  /* Ziehen mit der Maus, bei schon geänderter Reihenfolge: Friedhof über Level-Caps ablegen. */
+  W.scrollTo(0,0);
+  var gg=$("#h-gr").closest("section").querySelector(".grip"),gr=gg.getBoundingClientRect();
+  gg.dispatchEvent(new W.PointerEvent("pointerdown",{bubbles:true,clientX:gr.x+5,clientY:gr.y+5,button:0,pointerId:7}));
+  var ct=$("#h-cap").getBoundingClientRect().top+3;
+  W.dispatchEvent(new W.PointerEvent("pointermove",{clientX:100,clientY:ct,pointerId:7}));
+  ok(!$(".dropline").hidden&&order().indexOf("h-gr")===before.indexOf("h-gr"),"beim Ziehen zeigt eine Linie das Ziel, nichts springt");
+  W.dispatchEvent(new W.PointerEvent("pointerup",{clientX:100,clientY:ct,pointerId:7}));
+  ok(order().indexOf("h-gr")===order().indexOf("h-cap")-1&&$(".dropline").hidden,"Friedhof landet direkt über Level-Caps");
   $("#orderReset").click();
   ok(order().join()===before.join()&&$("#orderReset").hidden,"zurück zur Standard-Reihenfolge");
 }

@@ -63,7 +63,9 @@ section.folded .sec-h h2::before{transform:rotate(-90deg);opacity:.6}
 .grip:hover{border-color:var(--line);color:var(--ink)}
 .grip:focus-visible{outline:3px solid var(--markc);outline-offset:2px}
 body.sorting,body.sorting *{cursor:grabbing!important;user-select:none;-webkit-user-select:none}
-section.dragging{outline:3px dashed var(--markc);outline-offset:6px;border-radius:var(--r)}
+section.dragging{outline:3px dashed var(--markc);outline-offset:6px;border-radius:var(--r);opacity:.55}
+.dropline{position:fixed;z-index:50;height:6px;border-radius:3px;background:var(--markc);box-shadow:0 0 0 2px var(--ink);pointer-events:none}
+.dropline[hidden]{display:none}
 .ordrst{margin-top:26px;text-align:center}
 
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}

@@ -3,7 +3,7 @@
 "use strict";
 /* Versionsschutz: passt index.html nicht zu dieser Datei (Browser-Cache nach einem Deploy), einmal neu laden.
    APP_V setzt tools/bump.py zusammen mit data-v und ?v= in index.html. */
-var APP_V="202611271718";
+var APP_V="202611271727";
 var HTML_V=document.documentElement.getAttribute("data-v");
 if(HTML_V&&HTML_V!==APP_V){try{var rk="soullink-reload-"+HTML_V+"-"+APP_V;if(!sessionStorage.getItem(rk)){sessionStorage.setItem(rk,"1");location.reload();return}}catch(e){}}
 /* Spieler: Anzahl aus config.js (playerCount, 2 bis 6, Standard 3). Schlüssel p0 … p5, Namen stehen in meta.players. */
@@ -1060,25 +1060,37 @@ function saveOrder(){
   try{if($("orderReset").hidden)localStorage.removeItem(ORDER_KEY);else localStorage.setItem(ORDER_KEY,JSON.stringify(ids))}catch(e){}
 }
 (function(){
-  var drag=null;   // {sec, grip, y}
-  function moveTo(y){
-    var others=SORT.filter(function(s){return s!==drag.sec}),before=null;
-    for(var i=0;i<others.length;i++){var r=others[i].getBoundingClientRect();if(y<r.top+r.height/2){before=others[i];break}}
-    var ref=before||sortAnchor;
-    if(drag.sec.nextElementSibling!==ref)ref.parentNode.insertBefore(drag.sec,ref);
+  /* Beim Ziehen bleibt alles stehen, eine Linie zeigt nur, wo der Bereich landet. Verschoben wird erst beim Loslassen,
+     sonst springt die Seite unter der Maus (vor allem beim Ziehen nach oben). */
+  var drag=null;   // {sec, y, before}
+  var line=document.createElement("div");line.className="dropline";line.hidden=true;document.body.appendChild(line);
+  function target(y){   // erster andere Bereich, dessen Mitte unter dem Zeiger liegt (null = ans Ende)
+    var others=curOrder().map(function(id){return $(id).parentNode.parentNode}).filter(function(s){return s!==drag.sec});   // aktuelle, nicht die Standard-Reihenfolge
+    for(var i=0;i<others.length;i++){var r=others[i].getBoundingClientRect();if(y<r.top+r.height/2)return {before:others[i],top:r.top}}
+    return {before:null,top:others[others.length-1].getBoundingClientRect().bottom+26};
+  }
+  function show(){
+    var t=target(drag.y),m=document.querySelector("main").getBoundingClientRect();
+    drag.before=t.before;
+    line.style.top=Math.round(t.top-14)+"px";line.style.left=Math.round(m.left+16)+"px";line.style.width=Math.round(m.width-32)+"px";
+    line.hidden=false;
   }
   function tick(){   // am Rand mitscrollen, solange gezogen wird
     if(!drag)return;
-    var e=28,v=drag.y<e*2?-e/2:drag.y>innerHeight-e*2?e/2:0;
-    if(v){scrollBy(0,v);moveTo(drag.y)}
+    var e=60,v=drag.y<e?-12:drag.y>innerHeight-e?12:0;
+    if(v){scrollBy(0,v);show()}
     requestAnimationFrame(tick);
   }
-  /* Am Fenster lauschen, nicht am Griff: Beim Umhängen des Bereichs im DOM geht ein Pointer-Capture verloren. */
-  function onMove(e){if(drag){drag.y=e.clientY;moveTo(e.clientY)}}
-  function end(){
-    if(!drag)return;drag.sec.classList.remove("dragging");drag=null;document.body.classList.remove("sorting");
+  function onMove(e){if(drag){drag.y=e.clientY;show()}}
+  function end(e){
+    if(!drag)return;
+    if(e.type==="pointerup"){drag.y=e.clientY;show()}   // Stelle beim Loslassen zählt, auch wenn die letzte Bewegung fehlt
+    var d=drag;drag=null;line.hidden=true;
+    d.sec.classList.remove("dragging");document.body.classList.remove("sorting");
     removeEventListener("pointermove",onMove);removeEventListener("pointerup",end);removeEventListener("pointercancel",end);
-    saveOrder();
+    if(e.type!=="pointerup")return;
+    var ref=d.before||sortAnchor;
+    if(ref!==d.sec&&d.sec.nextElementSibling!==ref){ref.parentNode.insertBefore(d.sec,ref);saveOrder();d.sec.scrollIntoView({block:"nearest"})}
   }
   SORT.forEach(function(sec){
     var g=document.createElement("button");
@@ -1088,9 +1100,10 @@ function saveOrder(){
     sec.querySelector(".sec-h").appendChild(g);
     g.addEventListener("pointerdown",function(e){
       if(e.button||drag)return;e.preventDefault();
-      drag={sec:sec,y:e.clientY};sec.classList.add("dragging");document.body.classList.add("sorting");
+      drag={sec:sec,y:e.clientY,before:null};sec.classList.add("dragging");document.body.classList.add("sorting");
+      try{g.setPointerCapture(e.pointerId)}catch(x){}   // Bereich bleibt beim Ziehen im DOM, Capture hält also
       addEventListener("pointermove",onMove);addEventListener("pointerup",end);addEventListener("pointercancel",end);
-      requestAnimationFrame(tick);
+      show();requestAnimationFrame(tick);
     });
     g.addEventListener("keydown",function(e){
       var ord=curOrder(),k=ord.indexOf(secId(sec));

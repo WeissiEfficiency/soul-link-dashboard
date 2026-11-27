@@ -3,7 +3,7 @@
 ## 2026-11-27
 
 ### Hinzugefügt
-- Bereiche verschieben: Griff ⠿ neben der Überschrift ziehen (Maus oder Finger), oder anklicken und Pfeil hoch/runter. „Bereiche wieder in die Standard-Reihenfolge“ unten auf der Seite setzt zurück. Jedes Gerät merkt sich die Reihenfolge für sich.
+- Bereiche verschieben: Griff ⠿ neben der Überschrift ziehen (Maus oder Finger), eine Linie zeigt das Ziel, verschoben wird beim Loslassen. Oder Griff anklicken und Pfeil hoch/runter. „Bereiche wieder in die Standard-Reihenfolge“ unten auf der Seite setzt zurück. Jedes Gerät merkt sich die Reihenfolge für sich.
 - Bereiche ein- und ausklappen: Klick auf eine Überschrift (Run, Level-Caps, Schwächen, Überblick, Spieler, Team, Routen, Friedhof, Auswertung) klappt den Bereich zu, die Kopfzeile bleibt stehen. Jedes Gerät merkt sich das für sich.
 - Sonne/Mond und Ultrasonne/Ultramond: Die Totem-Prüfungen stehen jetzt als Level-Caps zwischen den Inselkönigen. Schwert/Schild: Champ-Cup-Finale (Level 55) vor Delion.
 - Daten nicht öffentlich (optional, `python tools/setup.py --private on`): Firestore lässt nur noch Admin und Freigeschaltete lesen. Das tägliche Backup läuft dann in einem privaten Repo (`tools/private-backup.yml`) mit einem Firebase-Dienstkonto und meldet sich über `meta.autoBackupAt` bei der Backup-Erinnerung. Anleitung in `docs/INSTALLATION.md`.
