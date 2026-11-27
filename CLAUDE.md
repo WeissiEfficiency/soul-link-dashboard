@@ -27,7 +27,7 @@ Soul-Link-Dashboard für alle Pokémon-Hauptspiele (Gen 1 bis 9, deutsch, Standa
 - `tools/setup.py`: Einrichtung für eine Gruppe (config.js, firestore.rules, Admin-UID, Spieleranzahl, Backups leeren)
 - `tools/bump.py`: neue Versionsnummer in `index.html` (`data-v`, `?v=`) und `js/app.js` (`APP_V`), gegen gemischte Browser-Caches
 - `tests/smoke.html` + `tools/test.py` + `.github/workflows/test.yml`: Klicktest im Testmodus (`index.html?test=1`, nur lokaler Speicher). Neue Abläufe dort mit abdecken
-- `tools/backup.py` + `.github/workflows/backup.yml`: tägliches Auto-Backup nach `backups/` (nicht von Hand bearbeiten)
+- `tools/backup.py` + `.github/workflows/backup.yml`: tägliches Auto-Backup nach `backups/` (nicht von Hand bearbeiten). Bei `privateRead: true` läuft es stattdessen im privaten Backup-Repo (`tools/private-backup.yml`, Dienstkonto)
 
 ## Konventionen
 

@@ -23,11 +23,11 @@ Seite ist fertig und läuft auf GitHub Pages mit Firebase (Firestore, Regeln aus
 | T-012 | Routen nacheinander einblenden, „Route hinzufügen“ unter der Liste | mittel | erledigt | M2 |
 | T-013 | Run-Status automatisch (Verloren-Knopf, Sieg mit Feuerwerk), Verpasst wie Tod | mittel | erledigt | M2 |
 | T-014 | Willkommensseite statt Dashboard für nicht freigegebene Konten | mittel | erledigt | M2 |
-| T-015 | Firestore-Lesen auf freigegebene Konten beschränken (Backup-Action braucht dann eigenen Zugang, öffentliche Backups im Repo bedenken) | mittel | offen | M2 |
+| T-015 | Firestore-Lesen auf freigegebene Konten beschränken (Backup-Action braucht dann eigenen Zugang, öffentliche Backups im Repo bedenken) | mittel | erledigt (`setup.py --private on`, Backup im privaten Repo mit Dienstkonto) | M2 |
 | T-016 | Anonymisiert, Spieleranzahl 2 bis 6, Einrichtungsskript und Installationsanleitung für andere Gruppen | mittel | erledigt | M2 |
 | T-017 | Saubere Vorlage ohne eigene Daten und Git-Verlauf (Template-Repo `soul-link-dashboard`); Änderungen am Code dort nachziehen | niedrig | erledigt | M2 |
 | T-018 | Spiele-Schalter für den Admin: alle Hauptspiele Gen 1 bis 9 mit Routen, Level-Caps, 1025 Pokémon; gilt ab dem nächsten Run | mittel | erledigt (Regeln veröffentlichen) | M2 |
-| T-019 | Routen und Level-Caps der neuen Spiele beim Spielen prüfen und in `js/games.js` korrigieren (v. a. Alola, Galar, Paldea, Let's Go) | niedrig | offen | M2 |
+| T-019 | Routen und Level-Caps der neuen Spiele beim Spielen prüfen und in `js/games.js` korrigieren (v. a. Alola, Galar, Paldea, Let's Go) | niedrig | Level-Caps aller Spiele mit Serebii abgeglichen und korrigiert (2026-11-27), Alola mit Totem-Prüfungen, Galar mit Champ-Cup; Routenreihenfolge der neueren Spiele weiter ein Vorschlag | M2 |
 | T-020 | Schwächen-Karte: Gegner-Pokémon oder Typen wählen, Angriffstypen, Gefahren und passende Pokémon des Teams, Typentabelle je Generation | mittel | erledigt | M2 |
 | T-021 | Team (bis 6 Links) mit Leiste, Sprites und Typen in den Routen, Hinweis bei gleichem Primärtyp im Team | mittel | erledigt | M2 |
 | T-022 | Auswertung nach Spiel filtern, „Verpasst“ pro Spieler, „Gestoppt vor“ (Level-Cap, an dem Runs enden) | mittel | erledigt | M2 |

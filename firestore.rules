@@ -57,12 +57,13 @@ service cloud.firestore {
         && smallMap(c.get('lv', {}), 20);
     }
     function validMeta(d) {
-      return d.keys().hasOnly(['players', 'run', 'tally', 'caps', 'backupAt', 'game', 'nextGame'])
+      return d.keys().hasOnly(['players', 'run', 'tally', 'caps', 'backupAt', 'autoBackupAt', 'game', 'nextGame'])
         && validPlayers(d.get('players', {}))
         && validRun(d.get('run', {}))
         && players(d.get('tally', {}))
         && validCaps(d.get('caps', {}))
         && str(d.get('backupAt', ''), 40)
+        && str(d.get('autoBackupAt', ''), 40)
         && str(d.get('game', ''), 20)
         && str(d.get('nextGame', ''), 20);
     }

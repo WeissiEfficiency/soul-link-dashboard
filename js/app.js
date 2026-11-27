@@ -3,7 +3,7 @@
 "use strict";
 /* Versionsschutz: passt index.html nicht zu dieser Datei (Browser-Cache nach einem Deploy), einmal neu laden.
    APP_V setzt tools/bump.py zusammen mit data-v und ?v= in index.html. */
-var APP_V="202611270823";
+var APP_V="202611271104";
 var HTML_V=document.documentElement.getAttribute("data-v");
 if(HTML_V&&HTML_V!==APP_V){try{var rk="soullink-reload-"+HTML_V+"-"+APP_V;if(!sessionStorage.getItem(rk)){sessionStorage.setItem(rk,"1");location.reload();return}}catch(e){}}
 /* Spieler: Anzahl aus config.js (playerCount, 2 bis 6, Standard 3). Schlüssel p0 … p5, Namen stehen in meta.players. */
@@ -25,7 +25,7 @@ var NO_DEATHS=function(){return perPlayer(function(){return false})};
 function defMeta(){return {players:perPlayer(function(){return {name:""}}),
   run:{no:1,status:"run",enders:NO_DEATHS(),where:"",cause:""},
   tally:perPlayer(function(){return {run:0,death:0,enc:0}}),
-  caps:{beaten:{},lv:{}},backupAt:""}}
+  caps:{beaten:{},lv:{}},backupAt:"",autoBackupAt:""}}
 var S={meta:defMeta(),routes:new Map(),history:[]};
 var store=null, mode="local", canWrite=true, loaded=false, routesLoaded=false;
 /* Testmodus (index.html?test=1, genutzt von tests/smoke.html): immer lokal mit eigenem Speicher, nie Firebase oder Artifact. */
@@ -635,7 +635,7 @@ function ageText(iso){var a=ageOf(iso);return new Date(iso).toLocaleDateString("
 function canon(x){if(Array.isArray(x))return "["+x.map(canon).join(",")+"]";
   if(x&&typeof x==="object")return "{"+Object.keys(x).sort().map(function(k){return JSON.stringify(k)+":"+canon(x[k])}).join(",")+"}";
   return JSON.stringify(x)}
-function dataKey(meta,routes,history){var m=clone(meta);delete m.backupAt;return canon({meta:m,routes:routes,history:history})}
+function dataKey(meta,routes,history){var m=clone(meta);delete m.backupAt;delete m.autoBackupAt;return canon({meta:m,routes:routes,history:history})}
 function autoBkCurrent(){   // entspricht das automatische Backup genau den aktuellen Daten?
   if(!autoBk)return false;var r={},h={};S.routes.forEach(function(v,id){r[id]=v});S.history.forEach(function(x){h[x.id]=x.data});
   return dataKey(dm(defMeta(),clone(autoBk.meta||{})),autoBk.routes||{},autoBk.history||{})===dataKey(S.meta,r,h);
@@ -645,7 +645,8 @@ function loadAutoBackup(){
   fetch(url,{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(o){if(o&&o.app==="soullink-bw"){autoBk=o;renderBk()}}).catch(function(){});
 }
 function renderBk(){
-  var man=S.meta.backupAt||"",auto=autoBk?autoBk.exportedAt:"",last=$("bkLast"),warn=$("bkWarn");
+  /* auto: letzte Prüfung des Auto-Backups (meta.autoBackupAt, schreibt tools/backup.py mit Dienstkonto) oder Stand von autoBackupUrl */
+  var man=S.meta.backupAt||"",auto=S.meta.autoBackupAt||(autoBk?autoBk.exportedAt:""),last=$("bkLast"),warn=$("bkWarn");
   var parts=[];if(auto)parts.push("Automatisch: "+ageText(auto));if(man)parts.push("Von Hand: "+ageText(man));
   last.textContent=parts.length?"Letzte Sicherung. "+parts.join(" · "):"Noch keine Sicherung gemacht.";
   var ages=[ageOf(man),ageOf(auto)].filter(function(a){return a!==null}),age=ages.length?Math.min.apply(null,ages):null;

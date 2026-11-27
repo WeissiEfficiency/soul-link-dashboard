@@ -58,18 +58,19 @@ service cloud.firestore {
         && smallMap(c.get('lv', {}), 20);
     }
     function validMeta(d) {
-      return d.keys().hasOnly(['players', 'run', 'tally', 'caps', 'backupAt', 'game', 'nextGame'])
+      return d.keys().hasOnly(['players', 'run', 'tally', 'caps', 'backupAt', 'autoBackupAt', 'game', 'nextGame'])
         && validPlayers(d.get('players', {}))
         && validRun(d.get('run', {}))
         && players(d.get('tally', {}))
         && validCaps(d.get('caps', {}))
         && str(d.get('backupAt', ''), 40)
+        && str(d.get('autoBackupAt', ''), 40)
         && str(d.get('game', ''), 20)
         && str(d.get('nextGame', ''), 20);
     }
 
     match /meta/{doc} {
-      allow read: if true;
+      allow read: if __READ__;
       allow create, update: if isWriter() && doc == 'main' && validMeta(request.resource.data);
       allow delete: if false;
     }
@@ -109,7 +110,7 @@ service cloud.firestore {
     }
 
     match /routes/{id} {
-      allow read: if true;
+      allow read: if __READ__;
       // r01 … r99 sind Standardrouten des gewählten Spiels, c… sind selbst angelegte Routen.
       allow create, update: if isWriter() && id.matches('r[0-9]{2}|c[a-z0-9]{1,12}') && validRoute(request.resource.data);
       allow delete: if isWriter();
@@ -129,7 +130,7 @@ service cloud.firestore {
     }
 
     match /history/{id} {
-      allow read: if true;
+      allow read: if __READ__;
       allow create: if isWriter() && id.matches('run[0-9]+-[a-z0-9]+') && validHistory(request.resource.data);
       // Abgeschlossene Runs ändern sich nicht. Gleiche Daten erneut schreiben (Backup einspielen) ist erlaubt.
       allow update: if isWriter() && request.resource.data == resource.data;

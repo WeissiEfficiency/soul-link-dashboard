@@ -101,6 +101,20 @@ Wer nicht freigeschaltet ist, sieht nur eine Willkommensseite.
 - **Regeln nach einem Update**: Ändert sich `firestore.rules.template`, `python tools/setup.py --rules` ausführen und die neue `firestore.rules` veröffentlichen.
 - **Neue Versionen**: Geänderte Dateien aus der Vorlage übernehmen, außer `config.js`, `firestore.rules` und `backups/` (das sind deine). Bei einem Fork geht das mit **Sync fork**, dabei deine `config.js` behalten. Danach `python tools/setup.py --rules` und die Regeln neu veröffentlichen, falls sich `firestore.rules.template` geändert hat.
 
+## Daten nicht öffentlich (optional)
+
+Normal kann jeder, der die Firebase-Werte kennt, die Daten lesen, und die Backups liegen öffentlich in `backups/`. So wird beides privat:
+
+1. Auf GitHub ein **privates** Repo anlegen, z. B. `soul-link-backups`. Die Datei `tools/private-backup.yml` dorthin als `.github/workflows/backup.yml` legen, alte Dateien aus `backups/` gleich mit.
+2. Im privaten Repo unter **Settings > Secrets and variables > Actions**:
+   - Reiter **Variables**: `APP_REPO` = Repo der Seite, z. B. `DEIN-NAME/soul-link`.
+   - Reiter **Secrets**: `FIREBASE_SERVICE_ACCOUNT`. Wert: Firebase-Konsole > Zahnrad > **Projekteinstellungen > Dienstkonten > Neuen privaten Schlüssel generieren**, die heruntergeladene JSON-Datei mit einem Texteditor öffnen und den ganzen Inhalt einfügen. Die Datei danach löschen, sie ist ein Generalschlüssel für dein Firebase-Projekt.
+3. Im privaten Repo unter **Actions > Backup > Run workflow** einmal starten. Grün = es klappt.
+4. `python tools/setup.py --private on`, committen, pushen, die neue `firestore.rules` veröffentlichen (Schritt 5.3).
+5. `backups/` im Repo der Seite löschen, committen, pushen. Ältere Stände bleiben im Git-Verlauf sichtbar.
+
+Danach lesen nur noch der Admin und die unter „Schreibrechte“ eingetragenen Konten. Die Backup-Action im Repo der Seite meldet nur noch, dass das Backup im privaten Repo läuft. Die Backup-Erinnerung liest `meta.autoBackupAt`, das die private Action nach jedem Lauf setzt. Zurück: `python tools/setup.py --private off`, Regeln neu veröffentlichen.
+
 ## Wenn etwas nicht klappt
 
 | Problem | Lösung |
@@ -109,10 +123,10 @@ Wer nicht freigeschaltet ist, sieht nur eine Willkommensseite.
 | Nach dem Anmelden „Kein Zugang“ | Als Admin: Admin-UID eingetragen und gepusht (Schritt 5)? Als Mitspieler: E-Mail unter Schreibrechte eingetragen? |
 | Oben „Speichern fehlgeschlagen“ | Regeln aus `firestore.rules` nicht oder in alter Fassung veröffentlicht (Schritt 5.3) |
 | Seite zeigt alten Stand | Strg+F5. GitHub Pages braucht nach einem Push 1 bis 2 Minuten |
-| Backup-Action schlägt fehl | Firebase-Werte in `config.js` fehlen, oder Actions sind nicht eingeschaltet (Schritt 4.2) |
+| Backup-Action schlägt fehl | Firebase-Werte in `config.js` fehlen, oder Actions sind nicht eingeschaltet (Schritt 4.2). Bei „Daten nicht öffentlich“: Secret `FIREBASE_SERVICE_ACCOUNT` oder Variable `APP_REPO` im privaten Repo fehlen |
 
 ## Was öffentlich ist
 
 - `config.js` (Firebase-Werte, Admin-UID) ist für jede Firebase-Webseite öffentlich, das ist normal und kein Sicherheitsproblem. Geschützt wird über die Regeln.
 - Die Backups in `backups/` liegen öffentlich im Repo: Spielernamen, Pokémon, Routen und Zähler. E-Mail-Adressen stehen nur in Firestore, nie im Repo oder Backup.
-- Die Willkommensseite blendet das Dashboard für Fremde aus, die Daten selbst kann aber jeder lesen, der die Firebase-Werte kennt. Wer das nicht möchte, nimmt Spitznamen statt echter Namen.
+- Die Willkommensseite blendet das Dashboard für Fremde aus, die Daten selbst kann aber jeder lesen, der die Firebase-Werte kennt. Wer das nicht möchte, schaltet „Daten nicht öffentlich“ ein (oben) oder nimmt Spitznamen statt echter Namen.

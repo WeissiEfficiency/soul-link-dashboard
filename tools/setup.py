@@ -7,6 +7,7 @@ firestore.rules aus firestore.rules.template. Nur Python 3, keine weiteren Paket
     python tools/setup.py --admin UID     # nur die Admin-UID setzen (config.js und firestore.rules)
     python tools/setup.py --players 4     # nur die Spieleranzahl ändern (2 bis 6)
     python tools/setup.py --rules         # firestore.rules aus Vorlage und config.js neu erzeugen
+    python tools/setup.py --private on    # Lesen nur für Freigeschaltete (Backup dann im privaten Repo, docs/INSTALLATION.md)
     python tools/setup.py --reset-data    # alte Backups in backups/ löschen (nach dem Kopieren eines fremden Repos)
 
 Anleitung: docs/INSTALLATION.md
@@ -34,7 +35,7 @@ except Exception:
 
 def read_config():
     """Vorhandene Werte aus config.js lesen (fehlende Datei = leere Werte)."""
-    cfg = {"firebase": {k: "" for k in FIREBASE_KEYS}, "adminUid": "", "autoBackupUrl": "", "playerCount": 3}
+    cfg = {"firebase": {k: "" for k in FIREBASE_KEYS}, "adminUid": "", "autoBackupUrl": "", "playerCount": 3, "privateRead": False}
     if not CONFIG.exists():
         return cfg
     text = CONFIG.read_text(encoding="utf-8")
@@ -49,6 +50,7 @@ def read_config():
     m = re.search(r'\bplayerCount:\s*(\d+)', text)
     if m:
         cfg["playerCount"] = int(m.group(1))
+    cfg["privateRead"] = bool(re.search(r'\bprivateRead:\s*true', text))
     return cfg
 
 
@@ -75,26 +77,28 @@ window.SOULLINK_CONFIG = {
   // Muss mit der UID in firestore.rules übereinstimmen (tools/setup.py hält beide gleich).
   adminUid: %s,
   // Letztes automatisches Backup (GitHub Action, tools/backup.py). Dient nur der Backup-Erinnerung.
-  autoBackupUrl: %s
+  autoBackupUrl: %s,
+  // true: Daten lesen nur Admin und Freigeschaltete (firestore.rules), Backup im privaten Repo.
+  privateRead: %s
 };
-""" % (lines, cfg["playerCount"], js(cfg["adminUid"]), js(cfg["autoBackupUrl"]))
+""" % (lines, cfg["playerCount"], js(cfg["adminUid"]), js(cfg["autoBackupUrl"]), js(bool(cfg.get("privateRead"))))
     CONFIG.write_text(text, encoding="utf-8", newline="\n")
     print("config.js geschrieben.")
 
 
-def write_rules(admin_uid):
+def write_rules(admin_uid, private=False):
     tpl = RULES_TEMPLATE.read_text(encoding="utf-8")
     uid = admin_uid or "NOCH-KEIN-ADMIN"
     if not re.fullmatch(r"[A-Za-z0-9_-]+", uid):
         sys.exit("Die Admin-UID enthält ungültige Zeichen: %r" % uid)
-    out = tpl.replace("__ADMIN_UID__", uid)
+    out = tpl.replace("__ADMIN_UID__", uid).replace("__READ__", "isWriter()" if private else "true")
     out = re.sub(
         r"// VORLAGE:.*?\n// Firestore > Regeln > alles ersetzen > Veröffentlichen\.",
         "// Erzeugt von tools/setup.py aus firestore.rules.template, nicht von Hand ändern.\n"
         "// Einfügen in der Firebase-Konsole: Firestore > Regeln > alles ersetzen > Veröffentlichen.",
         out, count=1, flags=re.S)
     RULES.write_text(out, encoding="utf-8", newline="\n")
-    print("firestore.rules erzeugt%s." % ("" if admin_uid else " (noch ohne Admin, erst nach --admin veröffentlichen)"))
+    print("firestore.rules erzeugt%s%s." % (", Lesen nur für Freigeschaltete" if private else "", "" if admin_uid else " (noch ohne Admin, erst nach --admin veröffentlichen)"))
 
 
 def guess_backup_url():
@@ -189,6 +193,7 @@ def main():
     ap.add_argument("--admin", metavar="UID", help="Admin-UID setzen")
     ap.add_argument("--players", metavar="N", help="Spieleranzahl setzen (2 bis 6)")
     ap.add_argument("--rules", action="store_true", help="nur firestore.rules neu erzeugen")
+    ap.add_argument("--private", choices=["on", "off"], help="Lesen nur für Freigeschaltete ein- oder ausschalten")
     ap.add_argument("--reset-data", action="store_true", help="Backups in backups/ löschen")
     ap.add_argument("--yes", action="store_true", help="bei --reset-data nicht nachfragen")
     a = ap.parse_args()
@@ -196,19 +201,23 @@ def main():
 
     if a.reset_data:
         reset_data(a.yes)
-    if a.admin is not None or a.players is not None:
+    if a.admin is not None or a.players is not None or a.private is not None:
         if a.admin is not None:
             cfg["adminUid"] = a.admin.strip()
         if a.players is not None:
             cfg["playerCount"] = player_count(a.players)
+        if a.private is not None:
+            cfg["privateRead"] = a.private == "on"
+            if cfg["privateRead"]:
+                cfg["autoBackupUrl"] = ""   # backups/ liegt dann im privaten Repo, die Seite liest meta.autoBackupAt
         write_config(cfg)
-        write_rules(cfg["adminUid"])
+        write_rules(cfg["adminUid"], cfg["privateRead"])
     elif a.rules:
-        write_rules(cfg["adminUid"])
+        write_rules(cfg["adminUid"], cfg["privateRead"])
     elif not a.reset_data:
         cfg = interactive(cfg)
         write_config(cfg)
-        write_rules(cfg["adminUid"])
+        write_rules(cfg["adminUid"], cfg["privateRead"])
         print("\nFertig. Nächste Schritte: docs/INSTALLATION.md (committen, pushen, Regeln in Firebase einfügen).")
 
 
